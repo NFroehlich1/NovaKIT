@@ -732,6 +732,14 @@ elevenlabs-convai {
   line-height: 1.6;
 }
 
+.qa-examples-label {
+  margin-top: 1rem;
+  text-transform: uppercase;
+  letter-spacing: .12rem;
+  font-size: .85rem;
+  color: #888;
+}
+
 .qa-categories {
   display: grid;
   grid-template-columns: 1fr 1fr;
