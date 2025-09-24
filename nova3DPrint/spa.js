@@ -4,7 +4,6 @@ class SPARouter {
         this.routes = {
             '/': 'home',
             '/index.html': 'home',
-            '/applications.html': 'applications',
             '/text-to-obj.html': 'text-to-obj',
             '/image-to-3d.html': 'image-to-3d',
             '/text-to-svg.html': 'text-to-svg'
@@ -122,7 +121,7 @@ class SPARouter {
     getPageTitle(pageName) {
         const titles = {
             'home': 'Nova 3D - 3D Printing Technology',
-            'applications': '3D Printing Applications - Nova 3D',
+            'image-to-3d': 'Image to 3D - Nova 3D',
             'text-to-obj': 'Text to 3D Object - Nova 3D',
             'text-to-svg': 'Text to SVG - Nova 3D'
         };
@@ -132,7 +131,7 @@ class SPARouter {
     getPageFileName(pageName) {
         const fileMap = {
             'home': 'index.html',
-            'applications': 'applications.html',
+            'image-to-3d': 'image-to-3d.html',
             'text-to-obj': 'text-to-obj.html',
             'text-to-svg': 'text-to-svg.html'
         };

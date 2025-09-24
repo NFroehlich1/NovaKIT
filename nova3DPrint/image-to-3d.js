@@ -10,6 +10,9 @@ class ImageTo3DGenerator {
 
     this.elements = {
       imageInput: document.getElementById('imageInput'),
+      imageDropzone: document.getElementById('imageDropzone'),
+      browseBtn: document.getElementById('browseBtn'),
+      selectedFile: document.getElementById('selectedFile'),
       generateBtn: document.getElementById('generateImgBtn'),
       artStyle: document.getElementById('artStyleImg'),
       topology: document.getElementById('topologyImg'),
@@ -26,10 +29,41 @@ class ImageTo3DGenerator {
       progressPercentage: document.getElementById('progressPercentageImg')
     };
 
-    this.elements.imageInput.addEventListener('change', () => this.updateState());
+    this.elements.imageInput.addEventListener('change', () => this.onFileSelected());
+    if (this.elements.browseBtn) this.elements.browseBtn.addEventListener('click', () => this.elements.imageInput.click());
+    this.bindDropzone();
     this.elements.generateBtn.addEventListener('click', () => this.generate());
     this.elements.retryBtn.addEventListener('click', () => this.generate());
 
+    this.updateState();
+  }
+
+  bindDropzone() {
+    const dz = this.elements.imageDropzone;
+    if (!dz) return;
+    ;['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, (e) => {
+      e.preventDefault(); e.stopPropagation(); dz.classList.add('dragover');
+    }));
+    ;['dragleave','drop'].forEach(ev => dz.addEventListener(ev, (e) => {
+      e.preventDefault(); e.stopPropagation(); dz.classList.remove('dragover');
+    }));
+    dz.addEventListener('drop', (e) => {
+      const files = e.dataTransfer?.files;
+      if (files && files.length > 0) {
+        this.elements.imageInput.files = files;
+        this.onFileSelected();
+      }
+    });
+    dz.addEventListener('click', () => this.elements.imageInput.click());
+    dz.addEventListener('keypress', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.elements.imageInput.click(); }});
+  }
+
+  onFileSelected() {
+    const file = this.elements.imageInput.files?.[0];
+    if (file && this.elements.selectedFile) {
+      this.elements.selectedFile.style.display = 'block';
+      this.elements.selectedFile.textContent = `Selected: ${file.name}`;
+    }
     this.updateState();
   }
 

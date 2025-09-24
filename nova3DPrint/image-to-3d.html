@@ -6,18 +6,14 @@
     <title>Image to 3D - Nova 3D</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="theme-kit-nova">
     <header>
         <nav class="topnav">
             <div class="nav-brand">
-                <h2>Nova 3D</h2>
+                <h2>KIT Nova</h2>
             </div>
             <div class="nav-links">
                 <a href="index.html">Home</a>
-                <a href="about.html">About 3D Printing</a>
-                <a href="techniques.html">Techniques</a>
-                <a href="applications.html">Applications</a>
-                <a href="materials.html">Materials</a>
                 <a href="text-to-obj.html">Text to 3D</a>
                 <a href="image-to-3d.html" class="active">Image to 3D</a>
                 <a href="text-to-svg.html">Text to SVG</a>
@@ -35,10 +31,18 @@
             <div class="generator-section">
                 <div class="input-card">
                     <h2>🖼️ Upload Reference Image</h2>
-                    <p>Use a clear frontal image of the object for best results.</p>
+                    <p class="form-help">Use a clear frontal image of the object for best results.</p>
 
-                    <div class="text-input-wrapper">
-                        <input type="file" id="imageInput" accept="image/*">
+                    <div class="dropzone" id="imageDropzone" tabindex="0" aria-label="Upload image by dragging and dropping or browsing">
+                        <input type="file" id="imageInput" accept="image/*" hidden>
+                        <div class="dropzone-content">
+                            <div class="dz-icon">⬆️</div>
+                            <div class="dz-text">
+                                <strong>Drag & Drop</strong> an image here or <button type="button" class="dz-browse" id="browseBtn">Browse</button>
+                                <div class="dz-sub">PNG, JPG up to ~10MB</div>
+                                <div class="dz-file" id="selectedFile" style="display:none;"></div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="generation-options">

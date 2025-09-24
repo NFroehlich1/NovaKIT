@@ -39,7 +39,7 @@ class TextToSvgGenerator {
         const hasPrompt = this.elements.textPrompt.value.trim().length > 0;
         this.elements.generateBtn.disabled = !hasPrompt;
         if (!hasPrompt) {
-            this.updateStatus('Enter a prompt to begin', 'warning');
+            this.updateStatus('Enter a prompt', 'warning');
         } else {
             this.updateStatus('Ready to generate', 'ready');
         }

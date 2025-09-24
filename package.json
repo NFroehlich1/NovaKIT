@@ -1,0 +1,34 @@
+{
+  "name": "nova-3d-demo",
+  "version": "1.0.0",
+  "description": "3D-Druck Demo Website mit ElevenLabs Integration",
+  "main": "spa-index.html",
+  "scripts": {
+    "start": "npx http-server ./nova3DPrint -p 3000 -o",
+    "dev": "npx live-server ./nova3DPrint --port=3000 --open=/spa-index.html",
+    "dev-spa": "npx live-server ./nova3DPrint --port=3000 --open=/spa-index.html",
+    "dev-traditional": "npx live-server ./nova3DPrint --port=3000 --open=/index.html",
+    "build": "echo Static HTML build complete",
+    "serve": "npx http-server ./nova3DPrint -p 8080"
+  },
+  "keywords": [
+    "3d-printing",
+    "demo",
+    "elevenlabs",
+    "html",
+    "css",
+    "javascript"
+  ],
+  "author": "Nova 3D Demo",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ]
+}
+
+
