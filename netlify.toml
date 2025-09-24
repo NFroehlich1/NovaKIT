@@ -1,0 +1,26 @@
+[build]
+  publish = "nova3DPrint"
+  command = ""
+
+[[redirects]]
+  from = "/image-to-3d"
+  to = "/image-to-3d.html"
+  status = 200
+
+[[redirects]]
+  from = "/text-to-obj"
+  to = "/text-to-obj.html"
+  status = 200
+
+[[redirects]]
+  from = "/text-to-svg"
+  to = "/text-to-svg.html"
+  status = 200
+
+# SPA fallback (any other path -> index.html; router handles content)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+
