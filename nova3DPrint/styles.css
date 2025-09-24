@@ -220,13 +220,7 @@ main {
 }
 
 /* Hero section */
-.hero {
-  text-align: center;
-  padding: 3rem 2.5rem;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  border-radius: 15px;
-  margin-bottom: 3rem;
-}
+/* Remove special hero bg for SVG page; keep unified page header */
 
 .hero h1 {
   font-size: 3rem;
@@ -1035,17 +1029,11 @@ elevenlabs-convai {
   overflow: hidden;
 }
 
-/* Subtle gradient top accent for cards */
+/* Remove the extra purple stripe on cards for Text/Image to 3D */
 .text-to-obj-container .input-card::before,
 .text-to-obj-container .results-card::before,
 .text-to-obj-container .api-info-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #6a7bfd 0%, #8b5cf6 100%);
+  content: none;
 }
 
 .input-card h2,
