@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to 3D Object - Nova 3D</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-kit-nova">
+    <header>
+        <nav class="topnav">
+            <div class="nav-brand">
+                <h2>Nova 3D</h2>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="about.html">About 3D Printing</a>
+                <a href="techniques.html">Techniques</a>
+                <a href="applications.html">Applications</a>
+                <a href="materials.html">Materials</a>
+                <a href="text-to-obj.html" class="active">Text to 3D</a>
+                <a href="text-to-svg.html">Text to SVG</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="page-header">
+            <h1>Text to 3D Object Generator</h1>
+            <p>Transform your text descriptions into 3D objects using AI technology</p>
+        </section>
+
+        <section class="text-to-obj-container">
+            <div class="generator-section">
+                <div class="input-card">
+                    <h2>🎯 Describe Your 3D Object</h2>
+                    <p>Enter a detailed description of the 3D object you want to create. Be specific about shape, style, and features.</p>
+                    
+                    <div class="text-input-wrapper">
+                        <textarea 
+                            id="textPrompt" 
+                            placeholder="Example: A sleek modern chair with curved legs and a high backrest, minimalist design with smooth surfaces..."
+                            rows="4"
+                            maxlength="500"
+                        ></textarea>
+                        <div class="char-counter">
+                            <span id="charCount">0</span>/500 characters
+                        </div>
+                    </div>
+
+                    <div class="generation-options">
+                        <h3>Generation Settings</h3>
+                        <div class="options-grid">
+                            <div class="option-group">
+                                <label for="artStyle">Art Style:</label>
+                                <select id="artStyle">
+                                    <option value="realistic">Realistic</option>
+                                    <option value="sculpture">Sculpture</option>
+                                </select>
+                            </div>
+                            <div class="option-group">
+                                <label for="topology">Topology:</label>
+                                <select id="topology">
+                                    <option value="quad">Quad</option>
+                                    <option value="triangle">Triangle</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="generate-controls">
+                        <button id="generateBtn" class="generate-btn">
+                            <span class="btn-icon">🚀</span>
+                            Generate 3D Object
+                        </button>
+                        <div class="api-status">
+                            <span id="apiStatus" class="status-text">Ready to generate</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div class="results-card" id="resultsCard" style="display: none;">
+                    <h2>🎨 Generated 3D Object</h2>
+                    <div class="generation-progress" id="progressBar" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <p class="progress-text">Generating your 3D object... <span id="progressPercentage">0%</span></p>
+                    </div>
+                    
+                    <div class="model-preview" id="modelPreview" style="display: none;">
+                        <div class="preview-placeholder">
+                            <span>3D Model Preview</span>
+                            <p>Model generated successfully!</p>
+                        </div>
+                        <div class="model-info">
+                            <h4>Model Information</h4>
+                            <div class="model-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Status:</span>
+                                    <span class="stat-value" id="modelStatus">Ready</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Task ID:</span>
+                                    <span class="stat-value" id="taskId">-</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="download-section">
+                            <h4>Download Options</h4>
+                            <div class="download-buttons">
+                                <button class="download-btn" id="downloadObjBtn" disabled>
+                                    📦 Download OBJ
+                                </button>
+                                <button class="download-btn" id="downloadGlbBtn" disabled>
+                                    🎯 Download GLB
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="error-message" id="errorMessage" style="display: none;">
+                        <h4>❌ Generation Failed</h4>
+                        <p id="errorText">An error occurred during generation. Please try again.</p>
+                        <button class="retry-btn" id="retryBtn">Try Again</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="examples-section">
+            <h2>💡 Example Prompts</h2>
+            <p>Try these example prompts to get started with text-to-3D generation:</p>
+            <div class="examples-grid">
+                <div class="example-card" onclick="fillPrompt('A modern ergonomic office chair with mesh backrest and adjustable armrests, sleek black design with chrome base')">
+                    <h4>🪑 Modern Office Chair</h4>
+                    <p>A modern ergonomic office chair with mesh backrest and adjustable armrests, sleek black design with chrome base</p>
+                </div>
+                <div class="example-card" onclick="fillPrompt('A vintage wooden treasure chest with metal hinges and lock, weathered surface with intricate carved details')">
+                    <h4>📦 Treasure Chest</h4>
+                    <p>A vintage wooden treasure chest with metal hinges and lock, weathered surface with intricate carved details</p>
+                </div>
+                <div class="example-card" onclick="fillPrompt('A futuristic sci-fi helmet with glowing blue visor, metallic silver surface with angular geometric patterns')">
+                    <h4>🚀 Sci-Fi Helmet</h4>
+                    <p>A futuristic sci-fi helmet with glowing blue visor, metallic silver surface with angular geometric patterns</p>
+                </div>
+                <div class="example-card" onclick="fillPrompt('A ceramic coffee mug with elegant handle, smooth white surface with subtle curves and modern minimalist design')">
+                    <h4>☕ Coffee Mug</h4>
+                    <p>A ceramic coffee mug with elegant handle, smooth white surface with subtle curves and modern minimalist design</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="how-it-works">
+            <h2>🔍 How It Works</h2>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Describe</h3>
+                    <p>Write a detailed text description of the 3D object you want to create</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Configure</h3>
+                    <p>Choose your preferred art style and topology settings</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Generate</h3>
+                    <p>Our AI processes your description and creates a 3D model</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3>Download</h3>
+                    <p>Download your generated 3D model in OBJ or GLB format</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Nova 3D - Demo Website for ElevenLabs Integration</p>
+    </footer>
+
+    <!-- ElevenLabs Widget -->
+    <elevenlabs-convai agent-id="agent_1301k3zm8h2tfcbbt9qnm90ac35t"></elevenlabs-convai>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+
+    <script src="text-to-obj.js"></script>
+    <script>
+        // ElevenLabs widget configuration
+        document.addEventListener('DOMContentLoaded', () => {
+            const widget = document.querySelector('elevenlabs-convai');
+            if (widget) {
+                widget.addEventListener('elevenlabs-convai:call', (event) => {
+                    event.detail.config = event.detail.config || {};
+                    event.detail.config.clientTools = {
+                        redirectToExternalURL: ({ url }) => {
+                            window.location.href = url;
+                            return { success: true, message: `Navigating to ${url}` };
+                        },
+                        navigateToPage: ({ page }) => { 
+                            window.location.href = page; 
+                            return { success: true, message: `Navigating to ${page}` };
+                        }
+                    };
+                });
+            }
+        });
+    </script>
+</body>
+</html>

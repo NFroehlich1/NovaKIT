@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to 3D - Nova 3D</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav class="topnav">
+            <div class="nav-brand">
+                <h2>Nova 3D</h2>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="about.html">About 3D Printing</a>
+                <a href="techniques.html">Techniques</a>
+                <a href="applications.html">Applications</a>
+                <a href="materials.html">Materials</a>
+                <a href="text-to-obj.html">Text to 3D</a>
+                <a href="image-to-3d.html" class="active">Image to 3D</a>
+                <a href="text-to-svg.html">Text to SVG</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="page-header">
+            <h1>Image to 3D Object</h1>
+            <p>Upload a reference image and let the AI generate a 3D model.</p>
+        </section>
+
+        <section class="text-to-obj-container">
+            <div class="generator-section">
+                <div class="input-card">
+                    <h2>🖼️ Upload Reference Image</h2>
+                    <p>Use a clear frontal image of the object for best results.</p>
+
+                    <div class="text-input-wrapper">
+                        <input type="file" id="imageInput" accept="image/*">
+                    </div>
+
+                    <div class="generation-options">
+                        <h3>Generation Settings</h3>
+                        <div class="options-grid">
+                            <div class="option-group">
+                                <label for="artStyleImg">Art Style:</label>
+                                <select id="artStyleImg">
+                                    <option value="realistic">Realistic</option>
+                                    <option value="sculpture">Sculpture</option>
+                                </select>
+                            </div>
+                            <div class="option-group">
+                                <label for="topologyImg">Topology:</label>
+                                <select id="topologyImg">
+                                    <option value="quad">Quad</option>
+                                    <option value="triangle">Triangle</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="generate-controls">
+                        <button id="generateImgBtn" class="generate-btn" disabled>
+                            <span class="btn-icon">🚀</span>
+                            Generate 3D Object
+                        </button>
+                        <div class="api-status">
+                            <span id="apiStatusImg" class="status-text status-warning">Please upload an image to begin</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div class="results-card" id="resultsCardImg" style="display: none;">
+                    <h2>🎨 Generated 3D Object</h2>
+                    <div class="generation-progress" id="progressBarImg" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <p class="progress-text">Generating your 3D object... <span id="progressPercentageImg">0%</span></p>
+                    </div>
+
+                    <div class="model-preview" id="modelPreviewImg" style="display: none;">
+                        <div class="preview-placeholder">
+                            <span>3D Model Preview</span>
+                            <p>Model generated successfully!</p>
+                        </div>
+                        <div class="model-info">
+                            <h4>Model Information</h4>
+                            <div class="model-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Status:</span>
+                                    <span class="stat-value" id="modelStatusImg">Ready</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Task ID:</span>
+                                    <span class="stat-value" id="taskIdImg">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="download-section">
+                            <h4>Download Options</h4>
+                            <div class="download-buttons">
+                                <button class="download-btn" id="downloadObjBtnImg" disabled>📦 Download OBJ</button>
+                                <button class="download-btn" id="downloadGlbBtnImg" disabled>🎯 Download GLB</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="error-message" id="errorMessageImg" style="display: none;">
+                        <h4>❌ Generation Failed</h4>
+                        <p id="errorTextImg">An error occurred during generation. Please try again.</p>
+                        <button class="retry-btn" id="retryBtnImg">Try Again</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Nova 3D - Demo Website for ElevenLabs Integration</p>
+    </footer>
+
+    <elevenlabs-convai agent-id="agent_1301k3zm8h2tfcbbt9qnm90ac35t"></elevenlabs-convai>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+
+    <script src="image-to-3d.js"></script>
+</body>
+</html>
+
+

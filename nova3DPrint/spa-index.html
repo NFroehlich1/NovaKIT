@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova 3D - 3D Printing Technology</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* SPA-specific styles */
+        main {
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        .nav-links a {
+            cursor: pointer;
+        }
+        
+        /* Loading state */
+        .loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="theme-kit-nova">
+    <header>
+        <nav class="topnav">
+            <div class="nav-brand">
+                <h2>Nova 3D</h2>
+            </div>
+            <div class="nav-links">
+                <a href="/index.html" class="active">Home</a>
+                <a href="/applications.html">Applications</a>
+                <a href="/text-to-obj.html">Text to 3D</a>
+                <a href="/image-to-3d.html">Image to 3D</a>
+                <a href="/text-to-svg.html">Text to SVG</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Content will be dynamically loaded here -->
+        <section class="hero">
+            <h1>Welcome to the World of 3D Printing</h1>
+            <p class="hero-subtitle">Discover the revolutionary technology that's changing how we design and manufacture objects.</p>
+        </section>
+
+        <section class="intro-grid">
+            <div class="intro-card">
+                <h3>🖨️ What is 3D Printing?</h3>
+                <p>3D printing is an additive manufacturing technology that creates three-dimensional objects layer by layer from digital models.</p>
+            </div>
+            <div class="intro-card">
+                <h3>⚡ Rapid Prototyping</h3>
+                <p>From idea to physical prototype in just hours - 3D printing revolutionizes product development.</p>
+            </div>
+            <div class="intro-card">
+                <h3>🔬 Precision Manufacturing</h3>
+                <p>Complex geometries and fine details are manufactured with the highest precision and repeatability.</p>
+            </div>
+        </section>
+
+        <section class="overview">
+            <h2>3D Printing Overview</h2>
+            <div class="overview-content">
+                <div class="overview-text">
+                    <p>3D printing has evolved from an experimental technology to an indispensable tool across various industries. From medicine to automotive to aerospace - innovative solutions are emerging everywhere.</p>
+                    <ul>
+                        <li>Reduced material waste</li>
+                        <li>Personalized products</li>
+                        <li>Complex internal structures</li>
+                        <li>On-demand manufacturing</li>
+                    </ul>
+                </div>
+                <div class="overview-image">
+                    <div class="placeholder-image">
+                        <span>🏭 3D Printer in Action</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Nova 3D - Demo Website for ElevenLabs Integration</p>
+    </footer>
+
+    <!-- ElevenLabs Widget -->
+    <elevenlabs-convai agent-id="agent_1301k3zm8h2tfcbbt9qnm90ac35t"></elevenlabs-convai>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+    
+    <!-- SPA Router -->
+    <script src="spa.js"></script>
+    <script src="text-to-obj.js"></script>
+    <script src="image-to-3d.js"></script>
+    <script src="text-to-svg.js"></script>
+</body>
+</html>
+
+
+
