@@ -143,7 +143,16 @@ class TextToObjGenerator {
             return;
         }
         
+        // Combine original prompt with refine instructions
+        const originalPrompt = this.elements.textPrompt.value.trim();
+        const combinedPrompt = refinePrompt.toLowerCase().includes(originalPrompt.toLowerCase()) 
+            ? refinePrompt 
+            : `${originalPrompt}, ${refinePrompt}`;
+        
         console.log('Refining with preview_task_id:', this.previewTaskId);
+        console.log('Original prompt:', originalPrompt);
+        console.log('Refine additions:', refinePrompt);
+        console.log('Combined prompt:', combinedPrompt);
 
         try {
             this.setGeneratingState();
@@ -151,8 +160,8 @@ class TextToObjGenerator {
 
             // Create refine task with preview_task_id
             this.lastRunMode = 'refine';
-            this.lastRunPrompt = refinePrompt;
-            const taskId = await this.createGenerationTask('refine', refinePrompt);
+            this.lastRunPrompt = combinedPrompt;
+            const taskId = await this.createGenerationTask('refine', combinedPrompt);
             this.currentTaskId = taskId;
             this.elements.taskId.textContent = taskId;
 
