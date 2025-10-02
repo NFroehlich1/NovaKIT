@@ -441,7 +441,10 @@ class TextToObjGenerator {
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const objText = await response.text();
             
-            console.log('OBJ data received, length:', objText.length, 'chars');
+            // Generate hash to verify if OBJ is different
+            const objHash = this.simpleHash(objText);
+            console.log('OBJ data received, length:', objText.length, 'chars, hash:', objHash);
+            
             const object = loader.parse(objText);
             object.name = 'loadedModel';
 
@@ -482,6 +485,15 @@ class TextToObjGenerator {
         }
     }
 
+    simpleHash(str) {
+        let hash = 0;
+        for (let i = 0; i < Math.min(str.length, 5000); i++) {
+            hash = ((hash << 5) - hash) + str.charCodeAt(i);
+            hash = hash & hash;
+        }
+        return hash.toString(16);
+    }
+
     addToHistory(entry) {
         const container = document.getElementById('resultsHistory');
         if (!container) return;
@@ -491,12 +503,13 @@ class TextToObjGenerator {
 
         const thumbUrl = entry.preview || '';
         const promptText = entry.prompt || '';
+        const modeLabel = entry.mode === 'refine' ? '✨ Refined' : '🆕 Original';
 
         item.innerHTML = `
             <div class="thumb">
                 ${thumbUrl ? `<img src="${thumbUrl}" alt="Preview">` : `<div style="width:120px;height:80px;border:1px dashed #ccc;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#888;">No preview</div>`}
                 <div>
-                    <div class="history-meta">${entry.time}</div>
+                    <div class="history-meta">${entry.time} • ${modeLabel}</div>
                     <div class="history-prompt">${promptText}</div>
                     <div class="history-actions">
                         <button class="btn" onclick="window.open('${entry.objUrl}', '_blank')">Open OBJ URL</button>
