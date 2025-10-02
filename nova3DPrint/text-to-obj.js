@@ -207,6 +207,8 @@ class TextToObjGenerator {
             console.log('Full request body:', JSON.stringify(requestBody, null, 2));
         }
 
+        console.log('Sending request to Meshy:', JSON.stringify(requestBody, null, 2));
+        
         const response = await fetch(this.baseURL, {
             method: 'POST',
             headers: {
@@ -217,10 +219,12 @@ class TextToObjGenerator {
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
+            console.error('Meshy API error:', errorData);
             throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
         }
 
         const data = await response.json();
+        console.log('Meshy API response:', data);
         return data.result;
     }
 
@@ -416,9 +420,19 @@ class TextToObjGenerator {
 
         console.log('Loading 3D model from:', url);
 
-        // Remove old model
+        // Remove ALL old models to prevent confusion
         const oldModel = this.scene.getObjectByName('loadedModel');
-        if (oldModel) this.scene.remove(oldModel);
+        if (oldModel) {
+            this.scene.remove(oldModel);
+            console.log('Removed old model from scene');
+        }
+        
+        // Clear the scene of any leftover meshes
+        this.scene.children.forEach(child => {
+            if (child.type === 'Group' || child.name === 'loadedModel') {
+                this.scene.remove(child);
+            }
+        });
 
         const loader = new OBJLoader();
 
@@ -427,7 +441,7 @@ class TextToObjGenerator {
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const objText = await response.text();
             
-            console.log('OBJ data received, parsing...');
+            console.log('OBJ data received, length:', objText.length, 'chars');
             const object = loader.parse(objText);
             object.name = 'loadedModel';
 
@@ -438,16 +452,19 @@ class TextToObjGenerator {
             const maxDim = Math.max(size.x, size.y, size.z);
             const scale = 2 / maxDim;
 
+            console.log('Model bounds:', { size, maxDim, center });
+
             object.position.x = -center.x * scale;
             object.position.y = -center.y * scale;
             object.position.z = -center.z * scale;
             object.scale.setScalar(scale);
 
-            // Apply improved material
+            // Apply improved material with unique color per load to verify it's new
+            const modelHash = objText.length % 360;
             object.traverse((child) => {
                 if (child.isMesh) {
                     child.material = new THREE.MeshStandardMaterial({ 
-                        color: 0x6a7bfd, 
+                        color: new THREE.Color().setHSL(modelHash / 360, 0.6, 0.5),
                         metalness: 0.2, 
                         roughness: 0.5,
                         flatShading: false
@@ -458,7 +475,7 @@ class TextToObjGenerator {
             });
 
             this.scene.add(object);
-            console.log('3D model loaded successfully');
+            console.log('3D model loaded successfully, vertices:', object.children.length);
         } catch (error) {
             console.error('3D Viewer: Failed to load model', error);
             alert('Failed to load 3D preview. You can still download the model files.');
