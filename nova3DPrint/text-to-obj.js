@@ -131,46 +131,33 @@ class TextToObjGenerator {
     }
 
     async refineModel() {
-        const refinePrompt = this.elements.refinePrompt.value.trim();
+        const variationPrompt = this.elements.refinePrompt.value.trim();
         
-        if (!refinePrompt) {
-            alert('Please enter refinement instructions');
+        if (!variationPrompt) {
+            alert('Please enter a variation prompt');
             return;
         }
 
-        if (!this.previewTaskId) {
-            alert('No preview model found. Please generate a model first.');
-            return;
-        }
-        
-        // Combine original prompt with refine instructions
-        const originalPrompt = this.elements.textPrompt.value.trim();
-        const combinedPrompt = refinePrompt.toLowerCase().includes(originalPrompt.toLowerCase()) 
-            ? refinePrompt 
-            : `${originalPrompt}, ${refinePrompt}`;
-        
-        console.log('Refining with preview_task_id:', this.previewTaskId);
-        console.log('Original prompt:', originalPrompt);
-        console.log('Refine additions:', refinePrompt);
-        console.log('Combined prompt:', combinedPrompt);
+        console.log('Generating variation with prompt:', variationPrompt);
 
         try {
             this.setGeneratingState();
             this.elements.refineSection.style.display = 'none';
 
-            // Create refine task with preview_task_id
-            this.lastRunMode = 'refine';
-            this.lastRunPrompt = combinedPrompt;
-            const taskId = await this.createGenerationTask('refine', combinedPrompt);
+            // Generate completely new model (don't use refine mode since it doesn't work)
+            this.lastRunMode = 'variation';
+            this.lastRunPrompt = variationPrompt;
+            const taskId = await this.createGenerationTask('preview', variationPrompt);
             this.currentTaskId = taskId;
+            // Don't update previewTaskId - keep original for future variations
             this.elements.taskId.textContent = taskId;
 
-            // Start polling for refined results
+            // Start polling for new variation
             this.startPolling();
 
         } catch (error) {
-            console.error('Refine failed:', error);
-            this.showError(`Failed to refine model: ${error.message}`);
+            console.error('Variation generation failed:', error);
+            this.showError(`Failed to generate variation: ${error.message}`);
             this.elements.refineSection.style.display = 'block';
         }
     }
@@ -503,7 +490,7 @@ class TextToObjGenerator {
 
         const thumbUrl = entry.preview || '';
         const promptText = entry.prompt || '';
-        const modeLabel = entry.mode === 'refine' ? '✨ Refined' : '🆕 Original';
+        const modeLabel = entry.mode === 'variation' ? '🔄 Variation' : (entry.mode === 'refine' ? '✨ Refined' : '🆕 Original');
 
         item.innerHTML = `
             <div class="thumb">
