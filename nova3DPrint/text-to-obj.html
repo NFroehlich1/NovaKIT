@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Text to 3D Object - Nova 3D</title>
     <link rel="stylesheet" href="styles.css">
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
 </head>
 <body class="theme-kit-nova">
     <header>
@@ -88,9 +96,9 @@
                     </div>
                     
                     <div class="model-preview" id="modelPreview" style="display: none;">
-                        <div class="preview-placeholder">
-                            <span>3D Model Preview</span>
-                            <p>Model generated successfully!</p>
+                        <div class="viewer-container">
+                            <canvas id="viewer3d"></canvas>
+                            <div class="viewer-hint">🖱️ Drag to rotate • Scroll to zoom</div>
                         </div>
                         <div class="model-info">
                             <h4>Model Information</h4>
@@ -186,7 +194,7 @@
     <elevenlabs-convai agent-id="agent_1301k3zm8h2tfcbbt9qnm90ac35t"></elevenlabs-convai>
     <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
 
-    <script src="text-to-obj.js"></script>
+    <script type="module" src="text-to-obj.js"></script>
     <script>
         // ElevenLabs widget configuration
         document.addEventListener('DOMContentLoaded', () => {
