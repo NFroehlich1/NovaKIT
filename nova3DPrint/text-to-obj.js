@@ -18,6 +18,7 @@ class TextToObjGenerator {
         this.currentObjUrl = null;
         this.lastRunMode = 'preview';
         this.lastRunPrompt = '';
+        this.previewTaskId = null;
 
         this.initializeUI();
     }
@@ -117,6 +118,7 @@ class TextToObjGenerator {
             this.lastRunPrompt = this.elements.textPrompt.value.trim();
             const taskId = await this.createGenerationTask('preview');
             this.currentTaskId = taskId;
+            this.previewTaskId = taskId;  // Save for refine
             this.elements.taskId.textContent = taskId;
 
             // Step 2: Start polling for results
@@ -136,10 +138,12 @@ class TextToObjGenerator {
             return;
         }
 
-        if (!this.currentTaskId) {
+        if (!this.previewTaskId) {
             alert('No preview model found. Please generate a model first.');
             return;
         }
+        
+        console.log('Refining with preview_task_id:', this.previewTaskId);
 
         try {
             this.setGeneratingState();
@@ -188,8 +192,10 @@ class TextToObjGenerator {
         };
 
         // If refining, include the preview_task_id
-        if (mode === 'refine' && this.currentTaskId) {
-            requestBody.preview_task_id = this.currentTaskId;
+        if (mode === 'refine' && this.previewTaskId) {
+            requestBody.preview_task_id = this.previewTaskId;
+            console.log('Sending refine request with preview_task_id:', this.previewTaskId);
+            console.log('Full request body:', JSON.stringify(requestBody, null, 2));
         }
 
         const response = await fetch(this.baseURL, {
