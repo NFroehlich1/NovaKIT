@@ -16,6 +16,8 @@ class TextToObjGenerator {
         this.renderer = null;
         this.controls = null;
         this.currentObjUrl = null;
+        this.lastRunMode = 'preview';
+        this.lastRunPrompt = '';
 
         this.initializeUI();
     }
@@ -111,6 +113,8 @@ class TextToObjGenerator {
             this.setGeneratingState();
 
             // Step 1: Create generation task
+            this.lastRunMode = 'preview';
+            this.lastRunPrompt = this.elements.textPrompt.value.trim();
             const taskId = await this.createGenerationTask('preview');
             this.currentTaskId = taskId;
             this.elements.taskId.textContent = taskId;
@@ -142,6 +146,8 @@ class TextToObjGenerator {
             this.elements.refineSection.style.display = 'none';
 
             // Create refine task with preview_task_id
+            this.lastRunMode = 'refine';
+            this.lastRunPrompt = refinePrompt;
             const taskId = await this.createGenerationTask('refine', refinePrompt);
             this.currentTaskId = taskId;
             this.elements.taskId.textContent = taskId;
@@ -309,6 +315,15 @@ class TextToObjGenerator {
                 // Load OBJ in 3D viewer
                 this.init3DViewer();
                 this.load3DModel(proxyUrl);
+
+                // Save result snapshot in history
+                this.addToHistory({
+                    preview: data.thumbnail_url || null,
+                    objUrl: proxyUrl,
+                    prompt: this.lastRunMode === 'refine' ? this.lastRunPrompt : this.lastRunPrompt,
+                    mode: this.lastRunMode,
+                    time: new Date().toLocaleTimeString()
+                });
             }
             if (data.model_urls.glb) {
                 this.elements.downloadGlbBtn.disabled = false;
@@ -433,6 +448,33 @@ class TextToObjGenerator {
             console.error('3D Viewer: Failed to load model', error);
             alert('Failed to load 3D preview. You can still download the model files.');
         }
+    }
+
+    addToHistory(entry) {
+        const container = document.getElementById('resultsHistory');
+        if (!container) return;
+
+        const item = document.createElement('div');
+        item.className = 'history-item';
+
+        const thumbUrl = entry.preview || '';
+        const promptText = entry.prompt || '';
+
+        item.innerHTML = `
+            <div class="thumb">
+                ${thumbUrl ? `<img src="${thumbUrl}" alt="Preview">` : `<div style="width:120px;height:80px;border:1px dashed #ccc;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#888;">No preview</div>`}
+                <div>
+                    <div class="history-meta">${entry.time}</div>
+                    <div class="history-prompt">${promptText}</div>
+                    <div class="history-actions">
+                        <button class="btn" onclick="window.open('${entry.objUrl}', '_blank')">Open OBJ URL</button>
+                        <button class="btn" onclick="window.textToObjGenerator && window.textToObjGenerator.load3DModel('${entry.objUrl}')">Load in Viewer</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.prepend(item);
     }
 
     showError(message) {

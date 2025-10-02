@@ -1296,6 +1296,54 @@ elevenlabs-convai {
   text-align: center;
 }
 
+.history-section {
+  margin-top: 1rem;
+  text-align: left;
+}
+
+.history-section h4 { margin-bottom: .5rem; color: #333; }
+
+.results-history {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.history-item {
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.history-item .thumb {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.history-item img {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.history-meta { color: #555; font-size: .9rem; }
+
+.history-prompt { color: #222; font-weight: 600; margin: .25rem 0; }
+
+.history-actions { margin-top: .5rem; display: flex; gap: .5rem; }
+
+.history-actions .btn { 
+  border: 1px solid #ddd; 
+  background: #f9f9f9; 
+  padding: .4rem .7rem; 
+  border-radius: 8px; 
+  cursor: pointer; 
+}
+
 .viewer-container {
   position: relative;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
