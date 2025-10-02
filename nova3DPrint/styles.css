@@ -1376,6 +1376,24 @@ elevenlabs-convai {
   font-family: monospace;
 }
 
+.refine-section {
+  background: #f0f4ff;
+  border: 2px dashed #6a7bfd;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.refine-section h4 {
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.refine-btn {
+  margin-top: 1rem;
+}
+
 .download-section h4 {
   margin-bottom: 1rem;
   color: #333;

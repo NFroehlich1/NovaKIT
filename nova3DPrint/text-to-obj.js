@@ -18,7 +18,6 @@ class TextToObjGenerator {
         this.currentObjUrl = null;
 
         this.initializeUI();
-        window.fillPrompt = this.fillPrompt.bind(this);
     }
 
     initializeUI() {
@@ -40,12 +39,18 @@ class TextToObjGenerator {
             downloadGlbBtn: document.getElementById('downloadGlbBtn'),
             retryBtn: document.getElementById('retryBtn'),
             errorText: document.getElementById('errorText'),
-            progressPercentage: document.getElementById('progressPercentage')
+            progressPercentage: document.getElementById('progressPercentage'),
+            refineSection: document.getElementById('refineSection'),
+            refinePrompt: document.getElementById('refinePrompt'),
+            refineBtn: document.getElementById('refineBtn')
         };
 
         // Add event listeners
         this.elements.generateBtn.addEventListener('click', () => this.generateModel());
         this.elements.retryBtn.addEventListener('click', () => this.generateModel());
+        if (this.elements.refineBtn) {
+            this.elements.refineBtn.addEventListener('click', () => this.refineModel());
+        }
 
         // Update button state based on input
         this.elements.textPrompt.addEventListener('input', () => {
@@ -58,12 +63,16 @@ class TextToObjGenerator {
     }
 
     updateCharCount() {
-        if (this.elements.charCount && this.elements.textPrompt) {
-            this.elements.charCount.textContent = this.elements.textPrompt.value.length;
+        if (this.elements && this.elements.charCount && this.elements.textPrompt) {
+            const count = this.elements.textPrompt.value.length;
+            this.elements.charCount.textContent = count;
+            console.log('Character count updated:', count);
         }
     }
 
     updateGenerateButton() {
+        if (!this.elements || !this.elements.textPrompt || !this.elements.generateBtn) return;
+        
         const hasPrompt = this.elements.textPrompt.value.trim().length > 0;
         this.elements.generateBtn.disabled = !hasPrompt;
 
@@ -75,14 +84,18 @@ class TextToObjGenerator {
     }
 
     fillPrompt(text) {
-        if (this.elements.textPrompt) {
+        console.log('fillPrompt called with:', text);
+        if (this.elements && this.elements.textPrompt) {
             this.elements.textPrompt.value = text;
+            this.elements.textPrompt.focus();
             this.updateCharCount();
             this.updateGenerateButton();
             this.elements.textPrompt.scrollIntoView({
                 behavior: 'smooth',
                 block: 'center'
             });
+        } else {
+            console.error('textPrompt element not found');
         }
     }
 
@@ -98,7 +111,7 @@ class TextToObjGenerator {
             this.setGeneratingState();
 
             // Step 1: Create generation task
-            const taskId = await this.createGenerationTask();
+            const taskId = await this.createGenerationTask('preview');
             this.currentTaskId = taskId;
             this.elements.taskId.textContent = taskId;
 
@@ -108,6 +121,38 @@ class TextToObjGenerator {
         } catch (error) {
             console.error('Generation failed:', error);
             this.showError(`Failed to start generation: ${error.message}`);
+        }
+    }
+
+    async refineModel() {
+        const refinePrompt = this.elements.refinePrompt.value.trim();
+        
+        if (!refinePrompt) {
+            alert('Please enter refinement instructions');
+            return;
+        }
+
+        if (!this.currentTaskId) {
+            alert('No preview model found. Please generate a model first.');
+            return;
+        }
+
+        try {
+            this.setGeneratingState();
+            this.elements.refineSection.style.display = 'none';
+
+            // Create refine task with preview_task_id
+            const taskId = await this.createGenerationTask('refine', refinePrompt);
+            this.currentTaskId = taskId;
+            this.elements.taskId.textContent = taskId;
+
+            // Start polling for refined results
+            this.startPolling();
+
+        } catch (error) {
+            console.error('Refine failed:', error);
+            this.showError(`Failed to refine model: ${error.message}`);
+            this.elements.refineSection.style.display = 'block';
         }
     }
 
@@ -127,14 +172,19 @@ class TextToObjGenerator {
         return true;
     }
 
-    async createGenerationTask() {
+    async createGenerationTask(mode = 'preview', customPrompt = null) {
         const requestBody = {
-            mode: "preview",  // or "refine" for higher quality
-            prompt: this.elements.textPrompt.value.trim(),
+            mode: mode,
+            prompt: customPrompt || this.elements.textPrompt.value.trim(),
             art_style: this.elements.artStyle.value,
             negative_prompt: "low quality, blurry, pixelated, broken, distorted",
             topology: this.elements.topology.value
         };
+
+        // If refining, include the preview_task_id
+        if (mode === 'refine' && this.currentTaskId) {
+            requestBody.preview_task_id = this.currentTaskId;
+        }
 
         const response = await fetch(this.baseURL, {
             method: 'POST',
@@ -264,6 +314,15 @@ class TextToObjGenerator {
                 this.elements.downloadGlbBtn.disabled = false;
                 const proxyUrl = `${this.baseURL}?asset_url=${encodeURIComponent(data.model_urls.glb)}`;
                 this.elements.downloadGlbBtn.onclick = () => this.downloadFromUrl(proxyUrl, 'model.glb');
+            }
+        }
+
+        // Show refine section after first preview generation
+        if (this.elements.refineSection) {
+            this.elements.refineSection.style.display = 'block';
+            // Pre-fill with original prompt for easy editing
+            if (!this.elements.refinePrompt.value) {
+                this.elements.refinePrompt.value = this.elements.textPrompt.value.trim();
             }
         }
 
@@ -428,6 +487,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('generateBtn')) {
         window.textToObjGenerator = new TextToObjGenerator();
         console.log('TextToObjGenerator initialized.');
+        
+        // Make fillPrompt available globally for onclick handlers
+        window.fillPrompt = (text) => {
+            if (window.textToObjGenerator) {
+                window.textToObjGenerator.fillPrompt(text);
+            }
+        };
     }
 });
 
