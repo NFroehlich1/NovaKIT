@@ -85,6 +85,22 @@ body.theme-kit-nova .nav-links a.active {
   margin-bottom: 3rem;
 }
 
+/* Rectangular hero logo above title */
+.hero-logo {
+  display: inline-flex;
+  background: #fff;
+  border: 2px solid #111;
+  border-radius: 12px;
+  padding: 8px 14px;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+.hero-logo img {
+  height: 56px;
+  width: auto;
+  display: block;
+}
+
 .kit-hero-brand {
   font-size: clamp(3rem, 8vw, 6rem);
   font-weight: 900;
@@ -183,6 +199,43 @@ header {
   color: #667eea;
   font-size: 1.8rem;
   font-weight: 700;
+}
+
+/* Use logo image in nav */
+.nav-brand img {
+  height: 40px;
+  width: auto;
+  display: block;
+}
+
+/* Circular white badge behind the logo to harmonize with header edges */
+.logo-badge {
+  background: #fff;
+  border-radius: 9999px;
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  border: 2px solid #eee;
+}
+
+/* Inline logo badge for headings/text (smaller) */
+.inline-logo-badge {
+  background: #fff;
+  border-radius: 9999px;
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #eee;
+  vertical-align: middle;
+  margin: 0 6px;
+}
+.inline-logo-badge img {
+  height: 32px;
+  width: auto;
+  display: block;
 }
 
 .nav-links {
