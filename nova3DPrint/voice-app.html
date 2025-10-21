@@ -97,29 +97,26 @@
         }
 
         .voice-button {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
+            background: #000000;
             color: white;
-            font-size: 3.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 8px;
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            font-weight: 600;
+            font-size: 1.1rem;
             transition: all 0.3s ease;
             outline: none;
         }
 
         .voice-button:hover:not(:disabled) {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+            background: #333333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
         .voice-button:active:not(:disabled) {
-            transform: translateY(-2px) scale(0.98);
+            transform: translateY(0);
         }
 
         .voice-button:disabled {
@@ -128,37 +125,11 @@
         }
 
         .voice-button.active {
-            animation: pulse 1.5s infinite;
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.08);
-            }
-        }
-
-        .end-button {
             background: #ef4444;
-            color: white;
-            border: none;
-            padding: 0.75rem 2rem;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            display: none;
         }
 
-        .end-button:hover {
+        .voice-button.active:hover {
             background: #dc2626;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
         }
 
         .error {
@@ -173,25 +144,24 @@
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
-            .voice-assistant-section {
-                padding: 1rem;
-            }
+            @media (max-width: 768px) {
+                .voice-assistant-section {
+                    padding: 1rem;
+                }
 
-            .voice-container {
-                padding: 2rem 1.5rem;
-            }
+                .voice-container {
+                    padding: 2rem 1.5rem;
+                }
 
-            .voice-container h1 {
-                font-size: 2rem;
-            }
+                .voice-container h1 {
+                    font-size: 2rem;
+                }
 
-            .voice-button {
-                width: 120px;
-                height: 120px;
-                font-size: 3rem;
+                .voice-button {
+                    padding: 0.875rem 2rem;
+                    font-size: 1rem;
+                }
             }
-        }
     </style>
 </head>
 <body class="theme-kit-nova">
@@ -213,7 +183,7 @@
     <main>
         <section class="voice-assistant-section">
             <div class="voice-container">
-                <h1>🎤 Voice Assistant</h1>
+                <h1>Voice Assistant</h1>
                 <p class="voice-subtitle">Talk to our AI about 3D printing and KIT Nova</p>
                 
                 <div class="status-area">
@@ -226,8 +196,9 @@
                 </div>
 
                 <div class="voice-controls">
-                    <button class="voice-button" id="voiceBtn" disabled>🎤</button>
-                    <button class="end-button" id="endBtn">End Conversation</button>
+                    <button class="voice-button" id="voiceBtn" disabled>
+                        <span id="btnText">Start Conversation</span>
+                    </button>
                 </div>
 
                 <div class="error" id="error"></div>
@@ -264,7 +235,7 @@
                 this.agentId = 'agent_1301k3zm8h2tfcbbt9qnm90ac35t';
                 
                 this.voiceBtn = document.getElementById('voiceBtn');
-                this.endBtn = document.getElementById('endBtn');
+                this.btnText = document.getElementById('btnText');
                 this.statusDot = document.getElementById('statusDot');
                 this.statusText = document.getElementById('statusText');
                 this.transcript = document.getElementById('transcript');
@@ -287,8 +258,7 @@
                     this.updateStatus(true, 'Ready - Click microphone to start');
                     this.voiceBtn.disabled = false;
                     
-                    this.voiceBtn.addEventListener('click', () => this.startConversation());
-                    this.endBtn.addEventListener('click', () => this.endConversation());
+                    this.voiceBtn.addEventListener('click', () => this.toggleConversation());
                     
                 } catch (error) {
                     console.error('Failed to initialize:', error);
@@ -297,13 +267,20 @@
                 }
             }
             
+            toggleConversation() {
+                if (this.isActive) {
+                    this.endConversation();
+                } else {
+                    this.startConversation();
+                }
+            }
+
             async startConversation() {
                 try {
                     console.log('Starting conversation session...');
                     this.isActive = true;
                     this.voiceBtn.classList.add('active');
-                    this.voiceBtn.disabled = true;
-                    this.voiceBtn.textContent = '🎤';
+                    this.btnText.textContent = 'End Conversation';
                     this.updateStatus(true, 'Connecting...');
                     
                     this.addMessage('user', 'Starting conversation...');
@@ -343,9 +320,6 @@
                         }
                     });
                     
-                    // Show end button
-                    this.endBtn.style.display = 'block';
-                    
                     console.log('Session started');
                     
                 } catch (error) {
@@ -370,9 +344,8 @@
                     this.isActive = false;
                     this.voiceBtn.classList.remove('active');
                     this.voiceBtn.disabled = false;
-                    this.voiceBtn.textContent = '🎤';
-                    this.endBtn.style.display = 'none';
-                    this.updateStatus(true, 'Ready - Click microphone to start');
+                    this.btnText.textContent = 'Start Conversation';
+                    this.updateStatus(true, 'Ready - Click to start');
                     this.addMessage('user', 'Conversation ended');
                     
                 } catch (error) {

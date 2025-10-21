@@ -987,7 +987,7 @@ elevenlabs-convai {
 }
 
 .ai-chat-notice {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #000000;
   color: white;
   padding: 2rem;
   border-radius: 15px;
@@ -1309,44 +1309,34 @@ elevenlabs-convai {
 }
 
 .generate-btn {
-  background: linear-gradient(135deg, #6a7bfd 0%, #8b5cf6 100%);
+  background: #000000;
   color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  padding: 1rem 2.25rem;
-  border-radius: 9999px;
+  border: none;
+  padding: 1rem 3rem;
+  border-radius: 8px;
   font-size: 1.1rem;
-  font-weight: 700;
-  letter-spacing: .2px;
+  font-weight: 600;
   cursor: pointer;
-  transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+  transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
-  box-shadow: 0 10px 24px rgba(106, 123, 253, 0.35), 0 2px 6px rgba(139, 92, 246, 0.25);
-  position: relative;
-  overflow: hidden;
-}
-
-.generate-btn::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(120% 120% at 50% 0%, rgba(255,255,255,.35) 0%, rgba(255,255,255,0) 60%);
-  pointer-events: none;
-  transition: opacity .25s ease;
-  opacity: .55;
+  outline: none;
 }
 
 .generate-btn:hover:not(:disabled) {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 14px 28px rgba(106, 123, 253, 0.4), 0 6px 12px rgba(139, 92, 246, 0.28);
+  background: #333333;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.generate-btn:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .generate-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
-  transform: none;
 }
 
 .api-status {
@@ -1925,7 +1915,7 @@ elevenlabs-convai {
 .machine-park-intro {
   text-align: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #000000;
   color: white;
   border-radius: 20px;
   margin-bottom: 3rem;
