@@ -18,6 +18,7 @@
                 <a href="image-to-3d.html">Image to 3D</a>
                 <a href="text-to-svg.html">Text to SVG</a>
                 <a href="machine-park.html" class="active">Machine Park</a>
+                <a href="voice-assistant-full.html">Voice Assistant</a>
             </div>
         </nav>
     </header>
@@ -63,6 +64,7 @@
                     <p class="machine-description">
                         Versatile FDM printer for rapid prototypes and precise manufacturing parts. Ideal for standard projects.
                     </p>
+                    <a href="voice-prusa-core-one.html" class="cta-primary" style="display: inline-block; text-decoration: none; margin-top: 1rem;">Ask about Prusa Core One</a>
                 </div>
             </div>
 
@@ -95,6 +97,7 @@
                     <p class="machine-description">
                         Large-format FDM printer for extensive projects. Perfect for larger components and complex models.
                     </p>
+                    <a href="voice-prusa-xl.html" class="cta-primary" style="display: inline-block; text-decoration: none; margin-top: 1rem;">Ask about Prusa XL</a>
                 </div>
             </div>
 
@@ -127,6 +130,7 @@
                     <p class="machine-description">
                         Precision SLA resin printer for highly detailed models. Ideal for fine details and smooth surfaces.
                     </p>
+                    <a href="voice-prusa-sl1s.html" class="cta-primary" style="display: inline-block; text-decoration: none; margin-top: 1rem;">Ask about Prusa SL1S</a>
                 </div>
             </div>
         </section>
@@ -168,16 +172,30 @@
         <p>&copy; 2024 Nova 3D - Demo Website for ElevenLabs Integration</p>
     </footer>
 
-    <!-- ElevenLabs Widget -->
-    <elevenlabs-convai agent-id="agent_1301k3zm8h2tfcbbt9qnm90ac35t"></elevenlabs-convai>
-    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+    <!-- ElevenLabs Widget - Hidden, use Voice Assistant page instead -->
+    <style>
+        elevenlabs-convai {
+            display: none !important;
+        }
+    </style>
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const widget = document.querySelector('elevenlabs-convai');
             
-            // Configure widget tools
+            // Wait for widget to be ready
             if (widget) {
+                // Configure widget with proper authentication
+                widget.addEventListener('elevenlabs-convai:ready', () => {
+                    console.log('ElevenLabs widget ready');
+                });
+                
+                // Handle authentication errors
+                widget.addEventListener('elevenlabs-convai:error', (event) => {
+                    console.error('ElevenLabs widget error:', event.detail);
+                });
+                
+                // Configure widget tools
                 widget.addEventListener('elevenlabs-convai:call', (event) => {
                     event.detail.config = event.detail.config || {};
                     event.detail.config.clientTools = {

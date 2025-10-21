@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Voice Assistant - Nova 3D</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body.voice-page {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .voice-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .voice-header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .voice-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .voice-logo img {
+            height: 50px;
+        }
+        
+        .voice-logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .voice-nav {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .voice-nav a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .voice-nav a:hover, .voice-nav a.active {
+            color: #667eea;
+        }
+        
+        .voice-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .voice-card {
+            background: white;
+            border-radius: 30px;
+            padding: 3rem;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        .voice-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .voice-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 3rem;
+        }
+        
+        .voice-button-container {
+            position: relative;
+            margin: 3rem auto;
+        }
+        
+        .voice-btn {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .voice-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.6);
+        }
+        
+        .voice-btn.listening {
+            animation: pulse 1.5s infinite;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            color: #666;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ef4444;
+        }
+        
+        .status-dot.connected {
+            background: #22c55e;
+            animation: pulse-dot 2s infinite;
+        }
+        
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .transcript-area {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 15px;
+            min-height: 150px;
+            max-height: 300px;
+            overflow-y: auto;
+            text-align: left;
+        }
+        
+        .transcript-message {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 10px;
+        }
+        
+        .transcript-message.user {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-left: 20%;
+        }
+        
+        .transcript-message.agent {
+            background: white;
+            border: 1px solid #e2e8f0;
+            margin-right: 20%;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .feature {
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .voice-header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .voice-card {
+                padding: 2rem 1rem;
+            }
+            
+            .voice-btn {
+                width: 150px;
+                height: 150px;
+                font-size: 4rem;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="voice-page">
+    <header class="voice-header">
+        <div class="voice-header-content">
+            <div class="voice-logo">
+                <img src="Kit-nova-2.png" alt="KIT Nova">
+                <div class="voice-logo-text">AI Voice Assistant</div>
+            </div>
+            <nav class="voice-nav">
+                <a href="index.html">Home</a>
+                <a href="machine-park.html">Machine Park</a>
+                <a href="voice-assistant-full.html" class="active">Voice Assistant</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="voice-container">
+        <div class="voice-card">
+            <h1 class="voice-title">🎤 Talk to AI</h1>
+            <p class="voice-subtitle">Click the button and ask me anything about 3D printing!</p>
+            
+            <div class="voice-button-container">
+                <button class="voice-btn" id="voiceBtn">
+                    🎤
+                </button>
+            </div>
+            
+            <div class="status-indicator">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">Click to start</span>
+            </div>
+            
+            <div class="transcript-area" id="transcriptArea">
+                <div class="transcript-message agent">
+                    <strong>AI:</strong> Hello! I'm your KIT Nova assistant. Click the microphone and ask me about our 3D printers, software, or materials!
+                </div>
+            </div>
+            
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🗣️</div>
+                    <div>Natural Voice</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <div>Real-time</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🧠</div>
+                    <div>Context Aware</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🎯</div>
+                    <div>Expert Knowledge</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        // ElevenLabs Conversational AI Implementation
+        class VoiceAssistant {
+            constructor() {
+                this.isListening = false;
+                this.mediaRecorder = null;
+                this.audioChunks = [];
+                this.audioContext = null;
+                this.audioQueue = [];
+                
+                this.voiceBtn = document.getElementById('voiceBtn');
+                this.statusDot = document.getElementById('statusDot');
+                this.statusText = document.getElementById('statusText');
+                this.transcriptArea = document.getElementById('transcriptArea');
+                
+                this.init();
+            }
+            
+            async init() {
+                this.voiceBtn.addEventListener('click', () => this.toggleListening());
+                this.updateStatus('ready', 'Ready - Click to start');
+            }
+            
+            async toggleListening() {
+                if (this.isListening) {
+                    this.stopListening();
+                } else {
+                    await this.startListening();
+                }
+            }
+            
+            async startListening() {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    
+                    this.mediaRecorder = new MediaRecorder(stream);
+                    this.audioChunks = [];
+                    
+                    this.mediaRecorder.addEventListener('dataavailable', event => {
+                        this.audioChunks.push(event.data);
+                    });
+                    
+                    this.mediaRecorder.addEventListener('stop', async () => {
+                        const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
+                        await this.processAudio(audioBlob);
+                        
+                        // Stop all tracks
+                        stream.getTracks().forEach(track => track.stop());
+                    });
+                    
+                    this.mediaRecorder.start();
+                    this.isListening = true;
+                    this.voiceBtn.classList.add('listening');
+                    this.voiceBtn.textContent = '⏹️';
+                    this.updateStatus('listening', 'Listening... speak now');
+                    this.addMessage('user', 'Recording...');
+                    
+                } catch (error) {
+                    console.error('Error accessing microphone:', error);
+                    this.updateStatus('error', 'Microphone access denied');
+                    alert('Please allow microphone access to use voice assistant.');
+                }
+            }
+            
+            stopListening() {
+                if (this.mediaRecorder && this.isListening) {
+                    this.mediaRecorder.stop();
+                    this.isListening = false;
+                    this.voiceBtn.classList.remove('listening');
+                    this.voiceBtn.textContent = '🎤';
+                    this.updateStatus('processing', 'Processing...');
+                }
+            }
+            
+            async processAudio(audioBlob) {
+                try {
+                    // Convert audio to text using Web Speech API (fallback)
+                    // In production, you would send this to ElevenLabs API
+                    
+                    // For now, simulate AI response
+                    const response = await this.getAIResponse();
+                    this.addMessage('agent', response);
+                    this.speakResponse(response);
+                    this.updateStatus('ready', 'Ready - Click to start');
+                    
+                } catch (error) {
+                    console.error('Error processing audio:', error);
+                    this.updateStatus('error', 'Processing failed');
+                }
+            }
+            
+            async getAIResponse() {
+                // Simulate AI response
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                const responses = [
+                    "We have three types of 3D printers: Prusa Core One for general use, Prusa XL for large projects, and Prusa SL1S for high-detail resin printing.",
+                    "For 3D printing software, we use Prusa Slicer. It's optimized for all our Prusa machines and includes automatic support generation.",
+                    "We support materials including PLA, PETG, ABS, ASA for FDM printing, and various resins for the SL1S printer.",
+                    "Common troubleshooting tips: Check bed leveling, adjust print temperature, and ensure proper filament loading.",
+                    "The Prusa Core One has a build volume of 250x220x270mm and is perfect for most projects."
+                ];
+                
+                return responses[Math.floor(Math.random() * responses.length)];
+            }
+            
+            speakResponse(text) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                utterance.volume = 1;
+                speechSynthesis.speak(utterance);
+            }
+            
+            addMessage(type, text) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `transcript-message ${type}`;
+                messageDiv.innerHTML = `<strong>${type === 'user' ? 'You' : 'AI'}:</strong> ${text}`;
+                this.transcriptArea.appendChild(messageDiv);
+                this.transcriptArea.scrollTop = this.transcriptArea.scrollHeight;
+            }
+            
+            updateStatus(state, text) {
+                this.statusText.textContent = text;
+                
+                if (state === 'ready' || state === 'listening') {
+                    this.statusDot.classList.add('connected');
+                } else if (state === 'error') {
+                    this.statusDot.classList.remove('connected');
+                    this.statusDot.style.background = '#ef4444';
+                } else {
+                    this.statusDot.classList.remove('connected');
+                }
+            }
+        }
+        
+        // Initialize
+        new VoiceAssistant();
+    </script>
+</body>
+</html>

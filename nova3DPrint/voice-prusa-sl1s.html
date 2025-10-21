@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prusa SL1S Assistant - KIT Nova</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .voice-assistant-section {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 2rem;
+        }
+
+        .voice-container {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .voice-container h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .voice-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .status-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ef4444;
+            transition: background 0.3s ease;
+        }
+
+        .status-dot.connected {
+            background: #22c55e;
+        }
+
+        .status-text {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .transcript-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 1.5rem;
+            min-height: 250px;
+            max-height: 400px;
+            overflow-y: auto;
+            text-align: left;
+            margin-bottom: 2rem;
+            border: 2px solid #e9ecef;
+        }
+
+        .message {
+            margin-bottom: 12px;
+            padding: 8px 0;
+            line-height: 1.5;
+        }
+
+        .message.user {
+            color: #667eea;
+        }
+
+        .message.agent {
+            color: #333;
+        }
+
+        .message strong {
+            font-weight: 600;
+        }
+
+        .voice-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .voice-button {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-size: 3.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .voice-button:hover:not(:disabled) {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        .voice-button:active:not(:disabled) {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        .voice-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .voice-button.active {
+            animation: pulse 1.5s infinite;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.08);
+            }
+        }
+
+        .end-button {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .end-button:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .error {
+            color: #ef4444;
+            background: #fee;
+            border: 1px solid #fcc;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .voice-assistant-section {
+                padding: 1rem;
+            }
+
+            .voice-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .voice-container h1 {
+                font-size: 2rem;
+            }
+
+            .voice-button {
+                width: 120px;
+                height: 120px;
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body class="theme-kit-nova">
+    <header>
+        <nav class="topnav">
+            <div class="nav-brand">
+                <div class="logo-badge"><img src="Kit-nova-2.png" alt="KIT nova logo"></div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="text-to-obj.html">Text to 3D</a>
+                <a href="image-to-3d.html">Image to 3D</a>
+                <a href="text-to-svg.html">Text to SVG</a>
+                <a href="machine-park.html" class="active">Machine Park</a>
+                <a href="voice-app.html">Voice Assistant</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="voice-assistant-section">
+            <div class="voice-container">
+                <a href="machine-park.html" style="display: inline-block; margin-bottom: 1rem; color: #667eea; text-decoration: none; font-weight: 500;">← Back to Machine Park</a>
+                
+                <h1>🔬 Prusa SL1S Assistant</h1>
+                <p class="voice-subtitle">Ask me anything about the Prusa SL1S resin printer</p>
+                
+                <div class="status-area">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span class="status-text" id="statusText">Initializing...</span>
+                </div>
+
+                <div class="transcript-container" id="transcript">
+                    <!-- Messages will appear here -->
+                </div>
+
+                <div class="voice-controls">
+                    <button class="voice-button" id="voiceBtn" disabled>🎤</button>
+                    <button class="end-button" id="endBtn">End Conversation</button>
+                </div>
+
+                <div class="error" id="error"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 KIT nova. All rights reserved.</p>
+    </footer>
+
+    <script type="module">
+        // Load ElevenLabs client library
+        let Conversation;
+        
+        try {
+            const module = await import('https://cdn.jsdelivr.net/npm/@11labs/client/+esm');
+            Conversation = module.Conversation;
+            console.log('ElevenLabs client loaded successfully');
+        } catch (error) {
+            console.error('Failed to load ElevenLabs client:', error);
+        }
+
+        class VoiceAssistant {
+            constructor() {
+                this.conversation = null;
+                this.isActive = false;
+                this.agentId = 'agent_8501k6z4rswvew4v24zd5q4khwhd'; // Prusa SL1S Agent
+                
+                this.voiceBtn = document.getElementById('voiceBtn');
+                this.endBtn = document.getElementById('endBtn');
+                this.statusDot = document.getElementById('statusDot');
+                this.statusText = document.getElementById('statusText');
+                this.transcript = document.getElementById('transcript');
+                this.errorEl = document.getElementById('error');
+                
+                this.init();
+            }
+            
+            async init() {
+                try {
+                    this.addMessage('agent', 'Ready to answer your questions about the Prusa SL1S...');
+                    
+                    if (!Conversation) {
+                        throw new Error('ElevenLabs client not loaded.');
+                    }
+                    
+                    console.log('ElevenLabs client ready');
+                    this.updateStatus(true, 'Ready - Click microphone to start');
+                    this.voiceBtn.disabled = false;
+                    
+                    this.voiceBtn.addEventListener('click', () => this.startConversation());
+                    this.endBtn.addEventListener('click', () => this.endConversation());
+                    
+                } catch (error) {
+                    console.error('Failed to initialize:', error);
+                    this.showError('Failed to initialize voice assistant: ' + error.message);
+                    this.updateStatus(false, 'Connection failed');
+                }
+            }
+            
+            async startConversation() {
+                try {
+                    console.log('Starting conversation session...');
+                    this.isActive = true;
+                    this.voiceBtn.classList.add('active');
+                    this.voiceBtn.disabled = true;
+                    this.voiceBtn.textContent = '🎤';
+                    this.updateStatus(true, 'Connecting...');
+                    
+                    this.addMessage('user', 'Starting conversation...');
+                    
+                    this.conversation = await Conversation.startSession({
+                        agentId: this.agentId,
+                        onConnect: () => {
+                            console.log('Connected - conversation ready');
+                            this.updateStatus(true, 'Listening...');
+                        },
+                        onDisconnect: () => {
+                            console.log('Disconnected from ElevenLabs');
+                            this.updateStatus(false, 'Disconnected');
+                            this.endConversation();
+                        },
+                        onMessage: (message) => {
+                            console.log('Received message:', message);
+                            // Extract text and type from message
+                            const text = message.message || message.text || (typeof message === 'string' ? message : null);
+                            const type = message.type || message.role || message.source;
+                            
+                            if (text) {
+                                // Determine if it's user input or AI response
+                                // User input: type === 'user_transcript' or role === 'user'
+                                // AI response: type === 'agent_response' or role === 'assistant'/'agent'
+                                if (type === 'user_transcript' || type === 'user' || message.role === 'user') {
+                                    this.addMessage('user', text);
+                                } else {
+                                    this.addMessage('agent', text);
+                                }
+                            }
+                        },
+                        onError: (error) => {
+                            console.error('Conversation error:', error);
+                            this.showError('Error: ' + error.message);
+                        }
+                    });
+                    
+                    this.endBtn.style.display = 'block';
+                    console.log('Session started');
+                    
+                } catch (error) {
+                    console.error('Error starting conversation:', error);
+                    this.showError('Failed to start: ' + error.message);
+                    await this.endConversation();
+                }
+            }
+            
+            async endConversation() {
+                try {
+                    console.log('Ending conversation...');
+                    
+                    if (this.conversation) {
+                        if (typeof this.conversation.endSession === 'function') {
+                            await this.conversation.endSession();
+                            console.log('Session ended');
+                        }
+                        this.conversation = null;
+                    }
+                    
+                    this.isActive = false;
+                    this.voiceBtn.classList.remove('active');
+                    this.voiceBtn.disabled = false;
+                    this.voiceBtn.textContent = '🎤';
+                    this.endBtn.style.display = 'none';
+                    this.updateStatus(true, 'Ready - Click microphone to start');
+                    this.addMessage('user', 'Conversation ended');
+                    
+                } catch (error) {
+                    console.error('Error ending conversation:', error);
+                }
+            }
+            
+            updateStatus(connected, text) {
+                this.statusText.textContent = text;
+                if (connected) {
+                    this.statusDot.classList.add('connected');
+                } else {
+                    this.statusDot.classList.remove('connected');
+                }
+            }
+            
+            addMessage(type, text) {
+                if (text === 'Starting conversation...' || text === 'I\'m listening - speak now!') {
+                    return;
+                }
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${type}`;
+                messageDiv.innerHTML = `<strong>${type === 'user' ? 'You' : 'AI'}:</strong> ${text}`;
+                this.transcript.appendChild(messageDiv);
+                this.transcript.scrollTop = this.transcript.scrollHeight;
+            }
+            
+            showError(message) {
+                this.errorEl.textContent = message;
+                this.errorEl.style.display = 'block';
+                setTimeout(() => {
+                    this.errorEl.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        new VoiceAssistant();
+    </script>
+</body>
+</html>
+

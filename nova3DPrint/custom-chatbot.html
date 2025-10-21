@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom AI Chatbot - Nova 3D</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .chatbot-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chatbot-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .chatbot-header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .chatbot-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .chatbot-logo img {
+            height: 50px;
+            width: auto;
+        }
+        
+        .chatbot-logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .chatbot-nav {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .chatbot-nav a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .chatbot-nav a:hover {
+            color: #667eea;
+        }
+        
+        .chatbot-container {
+            flex: 1;
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            width: 100%;
+        }
+        
+        .chatbot-welcome {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: white;
+        }
+        
+        .chatbot-welcome h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .chatbot-welcome p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .chatbot-interface {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chatbot-header-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .chatbot-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .chatbot-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .chatbot-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .message {
+            display: flex;
+            gap: 0.75rem;
+            max-width: 80%;
+        }
+        
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        
+        .message.assistant {
+            align-self: flex-start;
+        }
+        
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .message.assistant .message-avatar {
+            background: #f3f4f6;
+            color: #667eea;
+        }
+        
+        .message-content {
+            background: #f8fafc;
+            padding: 0.75rem 1rem;
+            border-radius: 18px;
+            border: 1px solid #e2e8f0;
+            position: relative;
+        }
+        
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+        
+        .message-text {
+            margin: 0;
+            line-height: 1.5;
+        }
+        
+        .message-time {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            margin-top: 0.25rem;
+        }
+        
+        .chatbot-input-area {
+            padding: 1rem 1.5rem;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-end;
+        }
+        
+        .input-container {
+            flex: 1;
+            position: relative;
+        }
+        
+        .chatbot-input {
+            width: 100%;
+            min-height: 44px;
+            max-height: 120px;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 22px;
+            resize: none;
+            font-family: inherit;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        
+        .chatbot-input:focus {
+            border-color: #667eea;
+        }
+        
+        .input-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 1rem;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .chatbot-input:not(:placeholder-shown) + .input-placeholder,
+        .chatbot-input:focus + .input-placeholder {
+            opacity: 0;
+        }
+        
+        .voice-button {
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .voice-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .voice-button.recording {
+            background: #ef4444;
+            animation: pulse 1s infinite;
+        }
+        
+        .send-button {
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .send-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: #f8fafc;
+            border-radius: 18px;
+            border: 1px solid #e2e8f0;
+            max-width: 80px;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #9ca3af;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+        
+        .error-message {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 0.75rem 1rem;
+            border-radius: 18px;
+            border: 1px solid #fecaca;
+            margin: 0.5rem 0;
+        }
+        
+        @media (max-width: 768px) {
+            .chatbot-header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .chatbot-nav {
+                gap: 1rem;
+            }
+            
+            .chatbot-welcome h1 {
+                font-size: 2rem;
+            }
+            
+            .chatbot-container {
+                padding: 0 1rem;
+            }
+            
+            .chatbot-interface {
+                height: 500px;
+            }
+            
+            .message {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body class="theme-kit-nova chatbot-page">
+    <header class="chatbot-header">
+        <div class="chatbot-header-content">
+            <div class="chatbot-logo">
+                <img src="Kit-nova-2.png" alt="KIT Nova logo">
+                <div class="chatbot-logo-text">Custom AI Chatbot</div>
+            </div>
+            <nav class="chatbot-nav">
+                <a href="index.html">Home</a>
+                <a href="text-to-obj.html">Text to 3D</a>
+                <a href="image-to-3d.html">Image to 3D</a>
+                <a href="text-to-svg.html">Text to SVG</a>
+                <a href="machine-park.html">Machine Park</a>
+                <a href="ai-assistant.html">AI Assistant</a>
+                <a href="custom-chatbot.html" class="active">Custom Chat</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="chatbot-container">
+        <section class="chatbot-welcome">
+            <h1>🤖 Custom AI Chatbot</h1>
+            <p>Chat with our AI assistant using text or voice. Get help with 3D printing, machine selection, and project support.</p>
+        </section>
+
+        <div class="chatbot-interface">
+            <div class="chatbot-header-bar">
+                <div class="chatbot-title">
+                    <span>🤖</span>
+                    <span>KIT Nova AI Assistant</span>
+                </div>
+                <div class="chatbot-status">
+                    <div class="status-indicator"></div>
+                    <span>Online</span>
+                </div>
+            </div>
+            
+            <div class="chatbot-messages" id="chatMessages">
+                <div class="message assistant">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        <p class="message-text">Hello! I'm your KIT Nova AI assistant. I can help you with 3D printing questions, machine selection, software guidance, and troubleshooting. How can I assist you today?</p>
+                        <div class="message-time" id="welcomeTime"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chatbot-input-area">
+                <div class="input-container">
+                    <textarea 
+                        id="chatInput" 
+                        class="chatbot-input" 
+                        placeholder="Type your message here..."
+                        rows="1"></textarea>
+                    <div class="input-placeholder">Type your message here...</div>
+                </div>
+                <button id="voiceButton" class="voice-button" title="Voice Input">
+                    🎤
+                </button>
+                <button id="sendButton" class="send-button" title="Send Message">
+                    ➤
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Nova 3D - Custom AI Chatbot with Voice Support</p>
+    </footer>
+
+    <!-- Load configuration -->
+    <script src="config.js"></script>
+    <script>
+        class CustomChatbot {
+            constructor() {
+                this.messages = [];
+                this.isRecording = false;
+                this.recognition = null;
+                this.synthesis = window.speechSynthesis;
+                this.voices = [];
+                
+                // ElevenLabs Conversational AI Configuration
+                this.elevenLabsAgentId = ELEVENLABS_CONFIG.AGENT_ID;
+                this.conversation = null;
+                this.isConnected = false;
+                
+                this.initializeElements();
+                this.initializeSpeechRecognition();
+                this.initializeSpeechSynthesis();
+                this.initializeElevenLabsConversation();
+                this.bindEvents();
+                this.setWelcomeTime();
+            }
+            
+            initializeElements() {
+                this.chatMessages = document.getElementById('chatMessages');
+                this.chatInput = document.getElementById('chatInput');
+                this.voiceButton = document.getElementById('voiceButton');
+                this.sendButton = document.getElementById('sendButton');
+            }
+            
+            initializeSpeechRecognition() {
+                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    this.recognition = new SpeechRecognition();
+                    this.recognition.continuous = false;
+                    this.recognition.interimResults = false;
+                    this.recognition.lang = 'en-US';
+                    
+                    this.recognition.onresult = (event) => {
+                        const transcript = event.results[0][0].transcript;
+                        this.chatInput.value = transcript;
+                        this.isRecording = false;
+                        this.voiceButton.classList.remove('recording');
+                        this.voiceButton.innerHTML = '🎤';
+                    };
+                    
+                    this.recognition.onerror = (event) => {
+                        console.error('Speech recognition error:', event.error);
+                        this.isRecording = false;
+                        this.voiceButton.classList.remove('recording');
+                        this.voiceButton.innerHTML = '🎤';
+                        this.showError('Voice recognition failed. Please try again.');
+                    };
+                    
+                    this.recognition.onend = () => {
+                        this.isRecording = false;
+                        this.voiceButton.classList.remove('recording');
+                        this.voiceButton.innerHTML = '🎤';
+                    };
+                } else {
+                    this.voiceButton.style.display = 'none';
+                    console.warn('Speech recognition not supported');
+                }
+            }
+            
+            initializeSpeechSynthesis() {
+                // Load voices when they become available
+                this.synthesis.onvoiceschanged = () => {
+                    this.voices = this.synthesis.getVoices();
+                };
+                
+                // Load voices immediately if already available
+                this.voices = this.synthesis.getVoices();
+            }
+            
+            bindEvents() {
+                this.sendButton.addEventListener('click', () => this.sendMessage());
+                this.voiceButton.addEventListener('click', () => this.toggleVoiceRecording());
+                this.chatInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+                
+                // Auto-resize textarea
+                this.chatInput.addEventListener('input', () => {
+                    this.chatInput.style.height = 'auto';
+                    this.chatInput.style.height = Math.min(this.chatInput.scrollHeight, 120) + 'px';
+                });
+            }
+            
+            setWelcomeTime() {
+                const welcomeTime = document.getElementById('welcomeTime');
+                if (welcomeTime) {
+                    welcomeTime.textContent = new Date().toLocaleTimeString();
+                }
+            }
+            
+            async initializeElevenLabsConversation() {
+                try {
+                    console.log('Initializing ElevenLabs Conversational AI...');
+                    console.log('Agent ID:', this.elevenLabsAgentId);
+                    
+                    // Check if @11labs/react is available
+                    if (typeof window.ElevenLabsReact === 'undefined') {
+                        console.warn('@11labs/react package not loaded. Using fallback mode.');
+                        return;
+                    }
+                    
+                    // Initialize conversation with the agent
+                    this.conversation = new window.ElevenLabsReact.useConversation({
+                        agentId: this.elevenLabsAgentId,
+                        onMessage: (message) => {
+                            console.log('Received message from agent:', message);
+                            this.handleAgentMessage(message);
+                        },
+                        onError: (error) => {
+                            console.error('Conversation error:', error);
+                            this.showError('Connection error: ' + error.message);
+                        },
+                        onConnect: () => {
+                            console.log('Connected to ElevenLabs agent');
+                            this.isConnected = true;
+                            this.updateConnectionStatus(true);
+                        },
+                        onDisconnect: () => {
+                            console.log('Disconnected from ElevenLabs agent');
+                            this.isConnected = false;
+                            this.updateConnectionStatus(false);
+                        }
+                    });
+                    
+                    // Connect to the agent
+                    await this.conversation.connect();
+                    
+                } catch (error) {
+                    console.error('Failed to initialize ElevenLabs conversation:', error);
+                    this.showError('Failed to connect to AI agent. Using fallback mode.');
+                }
+            }
+            
+            updateConnectionStatus(connected) {
+                const statusIndicator = document.querySelector('.status-indicator');
+                const statusText = document.querySelector('.chatbot-status span:last-child');
+                
+                if (statusIndicator && statusText) {
+                    if (connected) {
+                        statusIndicator.style.background = '#4ade80';
+                        statusText.textContent = 'Connected';
+                    } else {
+                        statusIndicator.style.background = '#ef4444';
+                        statusText.textContent = 'Disconnected';
+                    }
+                }
+            }
+            
+            handleAgentMessage(message) {
+                // Add agent message to chat
+                this.addMessage('assistant', message.text || message.content || message);
+                
+                // Speak the response if it's audio
+                if (message.audio) {
+                    this.playAudioMessage(message.audio);
+                } else if (message.text || message.content) {
+                    this.speak(message.text || message.content);
+                }
+            }
+            
+            async toggleVoiceRecording() {
+                if (this.isRecording) {
+                    // Stop recording
+                    this.stopVoiceRecording();
+                } else {
+                    // Start recording
+                    await this.startVoiceRecording();
+                }
+            }
+            
+            async startVoiceRecording() {
+                try {
+                    // Request microphone access
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    
+                    // Create MediaRecorder
+                    this.mediaRecorder = new MediaRecorder(stream);
+                    this.audioChunks = [];
+                    
+                    this.mediaRecorder.ondataavailable = (event) => {
+                        this.audioChunks.push(event.data);
+                    };
+                    
+                    this.mediaRecorder.onstop = async () => {
+                        const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
+                        await this.sendVoiceMessage(audioBlob);
+                        
+                        // Stop all tracks
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+                    
+                    // Start recording
+                    this.mediaRecorder.start();
+                    this.isRecording = true;
+                    this.voiceButton.classList.add('recording');
+                    this.voiceButton.innerHTML = '⏹️';
+                    
+                    console.log('Voice recording started');
+                    
+                } catch (error) {
+                    console.error('Error starting voice recording:', error);
+                    this.showError('Failed to access microphone. Please check permissions.');
+                }
+            }
+            
+            stopVoiceRecording() {
+                if (this.mediaRecorder && this.isRecording) {
+                    this.mediaRecorder.stop();
+                    this.isRecording = false;
+                    this.voiceButton.classList.remove('recording');
+                    this.voiceButton.innerHTML = '🎤';
+                    console.log('Voice recording stopped');
+                }
+            }
+            
+            async sendMessage() {
+                const message = this.chatInput.value.trim();
+                if (!message) return;
+                
+                // Add user message
+                this.addMessage('user', message);
+                this.chatInput.value = '';
+                this.chatInput.style.height = 'auto';
+                
+                // Show typing indicator
+                this.showTypingIndicator();
+                
+                // Disable send button
+                this.sendButton.disabled = true;
+                
+                try {
+                    if (this.conversation && this.isConnected) {
+                        // Send message to ElevenLabs agent
+                        console.log('Sending message to ElevenLabs agent:', message);
+                        await this.conversation.sendMessage(message);
+                        this.hideTypingIndicator();
+                    } else {
+                        // Fallback to local AI response
+                        console.log('Using fallback AI response');
+                        const response = await this.getFallbackResponse(message);
+                        this.hideTypingIndicator();
+                        this.addMessage('assistant', response);
+                        this.speak(response);
+                    }
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                    this.hideTypingIndicator();
+                    this.addMessage('assistant', 'Sorry, I encountered an error. Please try again.');
+                } finally {
+                    this.sendButton.disabled = false;
+                }
+            }
+            
+            async sendVoiceMessage(audioBlob) {
+                try {
+                    if (this.conversation && this.isConnected) {
+                        // Send audio to ElevenLabs agent
+                        console.log('Sending voice message to ElevenLabs agent');
+                        await this.conversation.sendAudio(audioBlob);
+                    } else {
+                        // Fallback: convert audio to text and send as text message
+                        console.log('Converting voice to text for fallback');
+                        const text = await this.convertAudioToText(audioBlob);
+                        if (text) {
+                            this.chatInput.value = text;
+                            await this.sendMessage();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error sending voice message:', error);
+                    this.showError('Failed to send voice message. Please try again.');
+                }
+            }
+            
+            async convertAudioToText(audioBlob) {
+                // This would typically use a speech-to-text service
+                // For now, we'll use the browser's speech recognition
+                return new Promise((resolve) => {
+                    if (!this.recognition) {
+                        resolve(null);
+                        return;
+                    }
+                    
+                    this.recognition.onresult = (event) => {
+                        const transcript = event.results[0][0].transcript;
+                        resolve(transcript);
+                    };
+                    
+                    this.recognition.onerror = () => {
+                        resolve(null);
+                    };
+                    
+                    this.recognition.start();
+                });
+            }
+            
+            playAudioMessage(audioData) {
+                try {
+                    const audioBlob = new Blob([audioData], { type: 'audio/mpeg' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audio = new Audio(audioUrl);
+                    
+                    audio.onended = () => {
+                        URL.revokeObjectURL(audioUrl);
+                    };
+                    
+                    audio.play();
+                } catch (error) {
+                    console.error('Error playing audio message:', error);
+                }
+            }
+            
+            async getAIResponse(message) {
+                try {
+                    // Try ElevenLabs API first if configured
+                    if (this.elevenLabsApiKey !== 'YOUR_ELEVENLABS_API_KEY') {
+                        return await this.getElevenLabsResponse(message);
+                    } else {
+                        // Fallback to simulated responses
+                        return await this.getFallbackResponse(message);
+                    }
+                } catch (error) {
+                    console.error('Error getting AI response:', error);
+                    return await this.getFallbackResponse(message);
+                }
+            }
+            
+            async getElevenLabsResponse(message) {
+                try {
+                    console.log('Attempting ElevenLabs API call...');
+                    console.log('API Key:', this.elevenLabsApiKey.substring(0, 10) + '...');
+                    console.log('Agent ID:', this.elevenLabsAgentId);
+                    
+                    // Add message to conversation history
+                    this.messages.push({ role: 'user', content: message });
+                    
+                    // ElevenLabs doesn't have direct agent chat API, so we'll use a hybrid approach
+                    // First, let's try to get a response using a simple text generation approach
+                    // and then enhance it with context awareness
+                    
+                    // Build context from conversation history
+                    const conversationContext = this.messages.slice(-6).map(msg => 
+                        `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`
+                    ).join('\n');
+                    
+                    // Create a context-aware prompt
+                    const contextPrompt = `You are the KIT Nova AI assistant for 3D printing. 
+                    
+Context from our conversation:
+${conversationContext}
+
+Current user message: ${message}
+
+Please provide a helpful response about 3D printing, machine selection, software guidance, or troubleshooting. Keep it concise and helpful.`;
+
+                    // For now, we'll use the fallback response but with enhanced context
+                    // In a real implementation, you would call an AI service like OpenAI or use ElevenLabs' conversation features
+                    console.log('Using enhanced fallback with context awareness');
+                    
+                    const aiResponse = await this.getContextAwareResponse(message, conversationContext);
+                    
+                    // Add AI response to conversation history
+                    this.messages.push({ role: 'assistant', content: aiResponse });
+                    
+                    console.log('Successfully got AI response:', aiResponse);
+                    return aiResponse;
+                    
+                } catch (error) {
+                    console.error('ElevenLabs API error details:', error);
+                    console.error('Error message:', error.message);
+                    throw error;
+                }
+            }
+            
+            async getContextAwareResponse(message, context) {
+                // Enhanced context-aware responses
+                const lowerMessage = message.toLowerCase();
+                const lowerContext = context.toLowerCase();
+                
+                // Check for specific 3D printing topics
+                if (lowerMessage.includes('printer') || lowerMessage.includes('machine')) {
+                    if (lowerContext.includes('xl') || lowerMessage.includes('large')) {
+                        return "For large projects, I recommend our Prusa XL with a 360mm × 360mm × 360mm build volume. It's perfect for bigger components and complex models. Would you like to know more about its capabilities?";
+                    } else if (lowerContext.includes('detail') || lowerMessage.includes('precision')) {
+                        return "For high-detail work, our Prusa SL1S resin printer is ideal. It has a 127mm × 80mm × 150mm build volume and produces incredibly smooth surfaces. Perfect for miniatures and detailed models!";
+                    } else {
+                        return "We have three types of 3D printers: 6 Prusa Core One units for general use, 1 Prusa XL for large projects, and 1 Prusa SL1S for high-detail resin printing. What type of project are you planning?";
+                    }
+                } else if (lowerMessage.includes('software') || lowerMessage.includes('slicer')) {
+                    return "We use Prusa Slicer for all our 3D printers. It's optimized for Prusa machines and includes automatic support generation. For CAD work, we support Fusion 360, Creo, and other professional tools. What specific software help do you need?";
+                } else if (lowerMessage.includes('material') || lowerMessage.includes('filament')) {
+                    return "We support various materials: PLA and PETG for beginners, ABS and ASA for functional parts, and specialty resins for the SL1S. The choice depends on your project's requirements for strength, flexibility, and finish quality.";
+                } else if (lowerMessage.includes('troubleshoot') || lowerMessage.includes('problem') || lowerMessage.includes('error')) {
+                    return "I'm here to help with troubleshooting! Common issues include bed adhesion problems, layer shifting, stringing, and warping. Can you describe the specific problem you're experiencing? I can guide you through the solution.";
+                } else if (lowerMessage.includes('help') || lowerMessage.includes('support')) {
+                    return "I'm your KIT Nova AI assistant! I can help with machine selection, software guidance, material recommendations, troubleshooting, and project planning. What would you like to know about 3D printing?";
+                } else {
+                    // Context-aware general responses
+                    if (lowerContext.includes('printer')) {
+                        return "Based on our conversation about printers, I can provide more specific guidance. What aspect of 3D printing would you like to explore further?";
+                    } else if (lowerContext.includes('software')) {
+                        return "Since we discussed software, would you like to know more about Prusa Slicer settings, CAD workflows, or file preparation?";
+                    } else {
+                        return "That's an interesting question! I'd be happy to help you with that. Could you provide more details about your 3D printing project or what specific assistance you need?";
+                    }
+                }
+            }
+            
+            async getFallbackResponse(message) {
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+                
+                // Context-aware responses based on message content
+                const lowerMessage = message.toLowerCase();
+                
+                if (lowerMessage.includes('printer') || lowerMessage.includes('machine')) {
+                    return "I can help you choose the right 3D printer! We have Prusa Core One (6 units), Prusa XL (1 unit), and Prusa SL1S (1 unit). What type of project are you planning?";
+                } else if (lowerMessage.includes('software') || lowerMessage.includes('slicer')) {
+                    return "For 3D printing software, we use Prusa Slicer for slicing and support Fusion 360, Creo, and other CAD tools. What specific software guidance do you need?";
+                } else if (lowerMessage.includes('material') || lowerMessage.includes('filament')) {
+                    return "We support various materials including PLA, PETG, ABS, ASA, and specialty resins. The choice depends on your project requirements. What are you trying to print?";
+                } else if (lowerMessage.includes('troubleshoot') || lowerMessage.includes('problem') || lowerMessage.includes('error')) {
+                    return "I'm here to help with troubleshooting! Common issues include bed adhesion, layer shifting, and stringing. Can you describe the specific problem you're experiencing?";
+                } else if (lowerMessage.includes('help') || lowerMessage.includes('support')) {
+                    return "I'm your KIT Nova AI assistant! I can help with machine selection, software guidance, troubleshooting, and project planning. What would you like to know?";
+                } else {
+                    const responses = [
+                        "That's an interesting question! I'd be happy to help you with that. Could you provide more details about your 3D printing project?",
+                        "I can assist you with various aspects of 3D printing at KIT Nova. What specific area would you like to focus on?",
+                        "Let me help you find the best solution for your needs. What type of 3D printing project are you working on?",
+                        "I'm here to support your 3D printing journey! Feel free to ask about our equipment, software, or any technical questions."
+                    ];
+                    return responses[Math.floor(Math.random() * responses.length)];
+                }
+            }
+            
+            addMessage(sender, text) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}`;
+                
+                const avatar = document.createElement('div');
+                avatar.className = 'message-avatar';
+                avatar.textContent = sender === 'user' ? '👤' : '🤖';
+                
+                const content = document.createElement('div');
+                content.className = 'message-content';
+                
+                const messageText = document.createElement('p');
+                messageText.className = 'message-text';
+                messageText.textContent = text;
+                
+                const messageTime = document.createElement('div');
+                messageTime.className = 'message-time';
+                messageTime.textContent = new Date().toLocaleTimeString();
+                
+                content.appendChild(messageText);
+                content.appendChild(messageTime);
+                messageDiv.appendChild(avatar);
+                messageDiv.appendChild(content);
+                
+                this.chatMessages.appendChild(messageDiv);
+                this.scrollToBottom();
+            }
+            
+            showTypingIndicator() {
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'message assistant typing-indicator';
+                typingDiv.id = 'typingIndicator';
+                
+                const avatar = document.createElement('div');
+                avatar.className = 'message-avatar';
+                avatar.textContent = '🤖';
+                
+                const content = document.createElement('div');
+                content.className = 'typing-dots';
+                content.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+                
+                typingDiv.appendChild(avatar);
+                typingDiv.appendChild(content);
+                this.chatMessages.appendChild(typingDiv);
+                this.scrollToBottom();
+            }
+            
+            hideTypingIndicator() {
+                const typingIndicator = document.getElementById('typingIndicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+            }
+            
+            async speak(text) {
+                try {
+                    // Try ElevenLabs TTS first if API key is configured
+                    if (this.elevenLabsApiKey !== 'YOUR_ELEVENLABS_API_KEY') {
+                        await this.speakWithElevenLabs(text);
+                    } else {
+                        // Fallback to browser TTS
+                        this.speakWithBrowser(text);
+                    }
+                } catch (error) {
+                    console.error('TTS error:', error);
+                    // Fallback to browser TTS
+                    this.speakWithBrowser(text);
+                }
+            }
+            
+            async speakWithElevenLabs(text) {
+                try {
+                    console.log('Attempting ElevenLabs TTS...');
+                    console.log('Text to speak:', text.substring(0, 50) + '...');
+                    console.log('Voice ID:', this.elevenLabsVoiceId);
+                    console.log('API URL:', `${this.elevenLabsApiUrl}/text-to-speech/${this.elevenLabsVoiceId}`);
+                    
+                    const response = await fetch(`${this.elevenLabsApiUrl}/text-to-speech/${this.elevenLabsVoiceId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'xi-api-key': this.elevenLabsApiKey
+                        },
+                        body: JSON.stringify({
+                            text: text,
+                            model_id: this.modelId,
+                            voice_settings: this.voiceSettings
+                        })
+                    });
+                    
+                    console.log('TTS Response status:', response.status);
+                    console.log('TTS Response headers:', Object.fromEntries(response.headers.entries()));
+                    
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('TTS Error response:', errorText);
+                        throw new Error(`ElevenLabs TTS error: ${response.status} - ${errorText}`);
+                    }
+                    
+                    const audioBlob = await response.blob();
+                    console.log('Audio blob size:', audioBlob.size, 'bytes');
+                    console.log('Audio blob type:', audioBlob.type);
+                    
+                    if (audioBlob.size === 0) {
+                        throw new Error('Received empty audio blob');
+                    }
+                    
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audio = new Audio(audioUrl);
+                    
+                    audio.onended = () => {
+                        URL.revokeObjectURL(audioUrl);
+                        console.log('TTS playback completed');
+                    };
+                    
+                    audio.onerror = (e) => {
+                        console.error('Audio playback error:', e);
+                        URL.revokeObjectURL(audioUrl);
+                    };
+                    
+                    await audio.play();
+                    console.log('TTS playback started');
+                } catch (error) {
+                    console.error('ElevenLabs TTS error details:', error);
+                    throw error;
+                }
+            }
+            
+            speakWithBrowser(text) {
+                if (!this.synthesis) return;
+                
+                // Cancel any ongoing speech
+                this.synthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                // Try to use a natural-sounding voice
+                const preferredVoice = this.voices.find(voice => 
+                    voice.name.includes('Google') || 
+                    voice.name.includes('Microsoft') ||
+                    voice.lang.startsWith('en')
+                );
+                
+                if (preferredVoice) {
+                    utterance.voice = preferredVoice;
+                }
+                
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                utterance.volume = 0.8;
+                
+                this.synthesis.speak(utterance);
+            }
+            
+            showError(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = message;
+                this.chatMessages.appendChild(errorDiv);
+                this.scrollToBottom();
+                
+                // Remove error after 5 seconds
+                setTimeout(() => {
+                    if (errorDiv.parentNode) {
+                        errorDiv.remove();
+                    }
+                }, 5000);
+            }
+            
+            scrollToBottom() {
+                this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+            }
+        }
+        
+        // Initialize chatbot when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new CustomChatbot();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Assistant - Nova 3D</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .voice-assistant-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .voice-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .voice-header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .voice-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .voice-logo img {
+            height: 50px;
+            width: auto;
+        }
+        
+        .voice-logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .voice-nav {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .voice-nav a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .voice-nav a:hover {
+            color: #667eea;
+        }
+        
+        .voice-container {
+            flex: 1;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            width: 100%;
+        }
+        
+        .voice-welcome {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: white;
+        }
+        
+        .voice-welcome h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .voice-welcome p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .voice-interface {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .widget-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+        
+        elevenlabs-convai {
+            width: 100% !important;
+            height: 500px !important;
+            display: block !important;
+            border-radius: 15px !important;
+        }
+        
+        .conversation-container {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+        
+        .agent-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ef4444;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-dot.connected {
+            background: #4ade80;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .status-text {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .voice-button {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin: 2rem auto;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .voice-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        }
+        
+        .voice-button.active {
+            animation: voice-pulse 1.5s infinite;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        @keyframes voice-pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 20px 50px rgba(239, 68, 68, 0.8);
+            }
+        }
+        
+        .voice-instructions {
+            color: #666;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            line-height: 1.6;
+        }
+        
+        .conversation-text {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+            min-height: 200px;
+            text-align: left;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .conversation-text .message {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 10px;
+        }
+        
+        .conversation-text .user-message {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-left: 20%;
+        }
+        
+        .conversation-text .agent-message {
+            background: white;
+            border: 1px solid #e2e8f0;
+            margin-right: 20%;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .voice-header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .voice-nav {
+                gap: 1rem;
+            }
+            
+            .voice-welcome h1 {
+                font-size: 2rem;
+            }
+            
+            .voice-container {
+                padding: 0 1rem;
+            }
+            
+            .voice-button {
+                width: 120px;
+                height: 120px;
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body class="theme-kit-nova voice-assistant-page">
+    <header class="voice-header">
+        <div class="voice-header-content">
+            <div class="voice-logo">
+                <img src="Kit-nova-2.png" alt="KIT Nova logo">
+                <div class="voice-logo-text">Voice Assistant</div>
+            </div>
+            <nav class="voice-nav">
+                <a href="index.html">Home</a>
+                <a href="text-to-obj.html">Text to 3D</a>
+                <a href="image-to-3d.html">Image to 3D</a>
+                <a href="text-to-svg.html">Text to SVG</a>
+                <a href="machine-park.html">Machine Park</a>
+                <a href="voice-assistant.html" class="active">Voice Assistant</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="voice-container">
+        <section class="voice-welcome">
+            <h1>🎤 KIT Nova Voice Assistant</h1>
+            <p>Talk directly with our AI assistant. Ask questions about 3D printing, machines, software, and get instant voice responses!</p>
+        </section>
+
+        <div class="voice-interface">
+            <div class="conversation-container">
+                <div class="agent-status">
+                    <div class="status-dot connected" id="statusDot"></div>
+                    <div class="status-text" id="statusText">Voice Assistant Ready</div>
+                </div>
+                
+                <div class="voice-instructions">
+                    <p><strong>Use the widget below</strong> to talk with the AI assistant</p>
+                    <p>Click "Start Conversation" and speak your questions about 3D printing</p>
+                </div>
+                
+                <div class="widget-container">
+                    <!-- ElevenLabs Widget will be embedded here -->
+                    <elevenlabs-convai agent-id="agent_1301k3zm8h2tfcbbt9qnm90ac35t"></elevenlabs-convai>
+                </div>
+            </div>
+        </div>
+
+        <section class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🗣️</div>
+                <div class="feature-title">Natural Voice</div>
+                <div>Speak naturally and get human-like responses</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-title">Real-time</div>
+                <div>Instant voice-to-voice communication</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <div class="feature-title">Context Aware</div>
+                <div>Remembers your conversation</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <div class="feature-title">Expert Knowledge</div>
+                <div>Trained on 3D printing expertise</div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Nova 3D - AI-Powered Voice Assistant</p>
+    </footer>
+
+    <!-- ElevenLabs Conversational AI Widget -->
+    <elevenlabs-convai agent-id="agent_1301k3zm8h2tfcbbt9qnm90ac35t" style="display: none;"></elevenlabs-convai>
+    <script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
+    <script src="config.js"></script>
+    <script>
+        class VoiceAssistant {
+            constructor() {
+                this.widget = null;
+                this.isActive = false;
+                
+                this.voiceButton = document.getElementById('voiceButton');
+                this.statusDot = document.getElementById('statusDot');
+                this.statusText = document.getElementById('statusText');
+                this.conversationText = document.getElementById('conversationText');
+                
+                this.waitForWidget();
+                this.bindEvents();
+            }
+            
+            waitForWidget() {
+                // Wait for ElevenLabs widget to load
+                const checkWidget = setInterval(() => {
+                    this.widget = document.querySelector('elevenlabs-convai');
+                    
+                    if (this.widget) {
+                        clearInterval(checkWidget);
+                        console.log('ElevenLabs widget found');
+                        this.updateStatus('connected', 'Connected - Click to talk');
+                        this.addMessage('system', 'Voice assistant ready! Click the microphone to start.');
+                    }
+                }, 500);
+                
+                // Timeout after 10 seconds
+                setTimeout(() => {
+                    if (!this.widget) {
+                        clearInterval(checkWidget);
+                        console.error('Widget failed to load');
+                        this.updateStatus('error', 'Failed to connect - ElevenLabs SDK not loaded');
+                        this.addMessage('system', 'Failed to load voice assistant. Please reload the page.');
+                    }
+                }, 10000);
+            }
+            
+            bindEvents() {
+                this.voiceButton.addEventListener('click', () => {
+                    if (this.isActive) {
+                        this.stopConversation();
+                    } else {
+                        this.startConversation();
+                    }
+                });
+            }
+            
+            async startConversation() {
+                if (!this.widget) {
+                    this.addMessage('system', 'Voice assistant not ready. Please wait or reload the page.');
+                    return;
+                }
+                
+                try {
+                    console.log('Starting conversation...');
+                    this.isActive = true;
+                    this.voiceButton.classList.add('active');
+                    this.voiceButton.textContent = '⏹️';
+                    this.updateStatus('active', 'Listening... speak now');
+                    
+                    // Open the widget programmatically
+                    if (typeof this.widget.startConversation === 'function') {
+                        await this.widget.startConversation();
+                    } else if (typeof this.widget.open === 'function') {
+                        this.widget.open();
+                    }
+                    
+                    this.addMessage('system', 'Microphone active - I\'m listening! Speak your question.');
+                    
+                } catch (error) {
+                    console.error('Error starting conversation:', error);
+                    this.addMessage('system', 'Error starting conversation. Please try again.');
+                    this.stopConversation();
+                }
+            }
+            
+            stopConversation() {
+                console.log('Stopping conversation...');
+                this.isActive = false;
+                this.voiceButton.classList.remove('active');
+                this.voiceButton.textContent = '🎤';
+                this.updateStatus('connected', 'Connected - Click to talk');
+                
+                if (this.widget && typeof this.widget.endConversation === 'function') {
+                    this.widget.endConversation();
+                }
+            }
+            
+            updateStatus(state, text) {
+                this.statusText.textContent = text;
+                
+                if (state === 'connected' || state === 'active') {
+                    this.statusDot.classList.add('connected');
+                } else {
+                    this.statusDot.classList.remove('connected');
+                }
+            }
+            
+            addMessage(type, text) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${type === 'agent' ? 'agent-message' : type === 'user' ? 'user-message' : 'agent-message'}`;
+                
+                const label = type === 'agent' ? 'AI Assistant' : type === 'user' ? 'You' : 'System';
+                messageDiv.innerHTML = `<strong>${label}:</strong> ${text}`;
+                
+                this.conversationText.appendChild(messageDiv);
+                this.conversationText.scrollTop = this.conversationText.scrollHeight;
+            }
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Initializing Voice Assistant...');
+            new VoiceAssistant();
+        });
+    </script>
+</body>
+</html>
